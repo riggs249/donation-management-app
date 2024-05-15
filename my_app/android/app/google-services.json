@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "758985702723",
+    "project_id": "cmsc23-todo-app-kltayawa",
+    "storage_bucket": "cmsc23-todo-app-kltayawa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:758985702723:android:842097a798dd0fe72803f6",
+        "android_client_info": {
+          "package_name": "com.example.week7_networking_discussion"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsBJHJwPQxKwc7FjSBMu7IXGMpcAJR8hc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:758985702723:android:57428fe62ca9754c2803f6",
+        "android_client_info": {
+          "package_name": "com.example.week9_authentication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsBJHJwPQxKwc7FjSBMu7IXGMpcAJR8hc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

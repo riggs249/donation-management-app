@@ -4,7 +4,7 @@ import 'org_signup_page.dart';
 import '../providers/auth_provider.dart';
 
 class DefSignUpPage extends StatefulWidget {
-  const DefSignUpPage({Key? key}) : super(key: key);
+  const DefSignUpPage({super.key});
 
   @override
   State<DefSignUpPage> createState() => _SignUpState();
@@ -12,12 +12,13 @@ class DefSignUpPage extends StatefulWidget {
 
 class _SignUpState extends State<DefSignUpPage> {
   final _formKey = GlobalKey<FormState>();
-  String? Name;
-  String? Username;
-  String? Password;
-  String? Address;
-  String? ContactNo;
+  String? name;
+  String? username;
+  String? password;
+  String? address;
+  String? contactNo;
   String? errorMessage;
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -38,8 +39,8 @@ class _SignUpState extends State<DefSignUpPage> {
                 addressField,
                 contactNoField,
                 errorMessage != null ? signUpErrorMessage : Container(),
-                submitButton,
-                signUpButton
+                isLoading ? const CircularProgressIndicator() : submitButton,
+                signUpButton,
               ],
             ),
           ),
@@ -64,7 +65,7 @@ class _SignUpState extends State<DefSignUpPage> {
             labelText: "Name",
             hintText: "Enter your full name",
           ),
-          onSaved: (value) => setState(() => Name = value),
+          onSaved: (value) => setState(() => name = value),
           validator: (value) {
             if (value == null || value.isEmpty) {
               return "Please enter your full name";
@@ -82,7 +83,7 @@ class _SignUpState extends State<DefSignUpPage> {
             labelText: "Username",
             hintText: "Enter a username",
           ),
-          onSaved: (value) => setState(() => Username = value),
+          onSaved: (value) => setState(() => username = value),
           validator: (value) {
             if (value == null || value.isEmpty) {
               return "Please enter a username";
@@ -101,7 +102,7 @@ class _SignUpState extends State<DefSignUpPage> {
             hintText: "At least 6 characters",
           ),
           obscureText: true,
-          onSaved: (value) => setState(() => Password = value),
+          onSaved: (value) => setState(() => password = value),
           validator: (value) {
             if (value == null || value.isEmpty || value.length < 6) {
               return "Please enter a valid password with at least 6 characters";
@@ -119,7 +120,7 @@ class _SignUpState extends State<DefSignUpPage> {
             labelText: "Address",
             hintText: "Enter your address",
           ),
-          onSaved: (value) => setState(() => Address = value),
+          onSaved: (value) => setState(() => address = value),
           validator: (value) {
             if (value == null || value.isEmpty) {
               return "Please enter your address";
@@ -137,7 +138,7 @@ class _SignUpState extends State<DefSignUpPage> {
             labelText: "Contact No",
             hintText: "Enter your contact number",
           ),
-          onSaved: (value) => setState(() => ContactNo = value),
+          onSaved: (value) => setState(() => contactNo = value),
           validator: (value) {
             if (value == null || value.isEmpty) {
               return "Please enter your contact number";
@@ -147,11 +148,34 @@ class _SignUpState extends State<DefSignUpPage> {
         ),
       );
 
-  Widget get submitButton => ElevatedButton(
+   Widget get submitButton => ElevatedButton(
         onPressed: () async {
           if (_formKey.currentState!.validate()) {
             _formKey.currentState!.save();
-            Navigator.pop(context);
+            setState(() {
+              isLoading = true;
+            });
+            try {
+              String? result = await context
+                  .read<UserAuthProvider>()
+                  .authService
+                  .signUpDonor(name!, username!, password!, address!, contactNo!);
+              if (mounted) {
+                Navigator.pop(context);
+              } else {
+                setState(() {
+                  errorMessage = result;
+                });
+              }
+            } catch (e) {
+              setState(() {
+                errorMessage = 'An unexpected error occurred';
+              });
+            } finally {
+              setState(() {
+                isLoading = false;
+              });
+            }
           }
         },
         child: const Text("Sign Up"),

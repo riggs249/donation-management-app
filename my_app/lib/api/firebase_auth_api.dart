@@ -32,6 +32,7 @@ class FirebaseAuthApi {
         'contactNo': contactNo,
       });
 
+      return null; // Success
     } on FirebaseAuthException catch (e) {
       return e.code;
     } catch (e) {
@@ -39,26 +40,25 @@ class FirebaseAuthApi {
     }
   }
 
-  Future<String?> signUpOrganization(String organizationName, String proofOfLegitimacy) async {
+  Future<String?> signUpOrganization(String organizationName) async {
     try {
       UserCredential userCredential = await auth.createUserWithEmailAndPassword(
         email: '${organizationName.toLowerCase().replaceAll(' ', '')}@example.com',
-        password: 'organizationPassword', 
+        password: 'organizationPassword',
       );
 
       String uid = userCredential.user!.uid;
 
-      // TODO upload the proof of legitimacy to Firebase Storage
-
       await firestore.collection('organizations').doc(uid).set({
         'organizationName': organizationName,
-        // 'proofOfLegitimacyUrl': proofOfLegitimacyUrl, // Store the URL of the uploaded file
+        'isApproved': false,
       });
 
-    } on FirebaseException catch (e) {
-      return (e.code);
+      return null;
+    } on FirebaseAuthException catch (e) {
+      return e.code;
     } catch (e) {
-      return ('Error: $e');
+      return 'Error: $e';
     }
   }
 
@@ -67,10 +67,10 @@ class FirebaseAuthApi {
       UserCredential credentials = await auth.signInWithEmailAndPassword(email: email, password: password);
       print(credentials);
       return "Success";
-    } on FirebaseException catch(e) {
-      return (e.code);
+    } on FirebaseAuthException catch(e) {
+      return e.code;
     } catch(e) {
-      return ('Error: $e');
+      return 'Error: $e';
     }
   }
 

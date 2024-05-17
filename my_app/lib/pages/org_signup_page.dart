@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 
 class OrgSignUpPage extends StatefulWidget {
-  const OrgSignUpPage({Key? key}) : super(key: key);
+  const OrgSignUpPage({super.key});
 
   @override
   State<OrgSignUpPage> createState() => _SignUpState();
@@ -14,6 +14,7 @@ class _SignUpState extends State<OrgSignUpPage> {
   String? organizationName;
   String? proofOfLegitimacy;
   String? errorMessage;
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +32,7 @@ class _SignUpState extends State<OrgSignUpPage> {
                 nameField,
                 proofField,
                 errorMessage != null ? signUpErrorMessage : Container(),
-                submitButton,
+                isLoading ? const CircularProgressIndicator() : submitButton,
               ],
             ),
           ),
@@ -56,7 +57,7 @@ class _SignUpState extends State<OrgSignUpPage> {
             labelText: "Organization Name",
             hintText: "Enter the organization name",
           ),
-          onSaved: (value) => setState(() => organizationName = value),
+          onSaved: (value) => organizationName = value,
           validator: (value) {
             if (value == null || value.isEmpty) {
               return "Please enter the organization name";
@@ -71,15 +72,13 @@ class _SignUpState extends State<OrgSignUpPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               "Proof of Legitimacy",
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             ElevatedButton(
-              onPressed: () {
-                // TODO
-              },
-              child: Text("Choose File"),
+              onPressed: () async {},
+              child: const Text("Choose File"),
             ),
           ],
         ),
@@ -89,7 +88,30 @@ class _SignUpState extends State<OrgSignUpPage> {
         onPressed: () async {
           if (_formKey.currentState!.validate()) {
             _formKey.currentState!.save();
-            Navigator.pop(context);
+            setState(() {
+              isLoading = true;
+            });
+            try {
+              String? result = await context
+                  .read<UserAuthProvider>()
+                  .authService
+                  .signUpOrganization(organizationName!);
+              if (mounted) {
+                Navigator.pop(context);
+              } else {
+                setState(() {
+                  errorMessage = result;
+                });
+              }
+            } catch (e) {
+              setState(() {
+                errorMessage = 'An unexpected error occurred';
+              });
+            } finally {
+              setState(() {
+                isLoading = false;
+              });
+            }
           }
         },
         child: const Text("Sign Up"),

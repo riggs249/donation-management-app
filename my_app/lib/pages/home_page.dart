@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:week9_authentication/pages/admin_page.dart';
 import 'package:week9_authentication/pages/organization_home_page.dart';
 import '../providers/auth_provider.dart';
 import 'signin_page.dart';
@@ -36,7 +37,7 @@ class _HomePageState extends State<HomePage> {
             return const SignInPage();
           }
 
-          return OrganizationHomePage(); //temporary for accessing org home page
+          return SignInPage(); //temporary for accessing org home page
         });
   }
 }

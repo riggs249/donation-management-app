@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:week9_authentication/api/firebase_auth_api.dart';
+import '../api/firebase_auth_api.dart';
 
 class UserAuthProvider with ChangeNotifier {
   late FirebaseAuthApi authService;

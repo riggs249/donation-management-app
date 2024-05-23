@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:week9_authentication/pages/admin_page.dart';
+import 'package:week9_authentication/pages/organization_home_page.dart';
 import '../providers/auth_provider.dart';
 import 'default_signup_page.dart';
 
@@ -119,7 +120,7 @@ class _SignInPageState extends State<SignInPage> {
             if (message == "Success") {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => AdminPage()),
+                MaterialPageRoute(builder: (context) => OrganizationHomePage()),
               );
             } else {
               setState(() {

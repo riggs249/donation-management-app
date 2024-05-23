@@ -1,12 +1,26 @@
-import 'package:flutter/material.dart';
-import 'package:week9_authentication/pages/donations_details_page.dart';
 
-class OrganizationHomePage extends StatelessWidget {
-  const OrganizationHomePage({Key? key}) : super(key: key);
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:week9_authentication/pages/admin_page.dart';
+import 'package:week9_authentication/pages/donations_details_page.dart';
+import 'package:provider/provider.dart';
+import 'package:week9_authentication/pages/signin_page.dart';
+import '../providers/auth_provider.dart';
+
+class OrganizationHomePage extends StatefulWidget {
+  const OrganizationHomePage({super.key});
 
   @override
+  State<OrganizationHomePage> createState() => _OrganizationHomePageState();
+}
+  
+class _OrganizationHomePageState extends State<OrganizationHomePage> {
+
+  @override
+
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: drawer,
       appBar: AppBar(
         title: Text('Organization Home'),
       ),
@@ -22,7 +36,7 @@ class OrganizationHomePage extends StatelessWidget {
             SizedBox(height: 20),
             Expanded(
               child: ListView.builder(
-                itemCount: 10, //sample palang dummy data
+                itemCount: 15, //sample palang dummy data
                 itemBuilder: (context, index) {
                   return Card(
                     elevation: 2,
@@ -51,5 +65,56 @@ class OrganizationHomePage extends StatelessWidget {
         ),
       ),
     );
+    
   }
+  Drawer get drawer => Drawer(
+          child: ListView(padding: EdgeInsets.zero, children: [
+        const DrawerHeader(
+  child: Text("Organization Page", style: TextStyle(fontSize: 24)),
+  decoration: BoxDecoration(
+    gradient: LinearGradient(
+      colors: [Colors.blue, Colors.green], // Define the colors for the gradient
+      begin: Alignment.topLeft, // Define the start point of the gradient
+      end: Alignment.bottomRight, // Define the end point of the gradient
+    ),
+  ),
+),
+
+        ListTile(
+          title: const Text('Details'),
+          onTap: () {
+          //   Navigator.push(
+          //       context,
+          //       MaterialPageRoute(
+          //           builder: (context) => UserDetailsPage(details: userData)));
+          },
+        ),
+        ListTile(
+          title: const Text('Todo List'),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.pushNamed(context, "/");
+          },
+        ),
+        ListTile(
+          title: const Text('Logout'),
+          onTap: () {
+            context.read<UserAuthProvider>().signOut();
+          Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => SignInPage()),
+                (Route<dynamic> route) => false,
+              );
+          },
+        ),
+        ListTile(
+          title: const Text('Admin page'),
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => AdminPage()));
+          },
+        ),
+      ]));
 }

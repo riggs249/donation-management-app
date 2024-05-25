@@ -12,6 +12,10 @@ class OrgSignUpPage extends StatefulWidget {
 class _SignUpState extends State<OrgSignUpPage> {
   final _formKey = GlobalKey<FormState>();
   String? organizationName;
+  String? email;
+  String? password;
+  String? address;
+  String? contactNo;
   String? proofOfLegitimacy;
   String? errorMessage;
   bool isLoading = false;
@@ -30,6 +34,10 @@ class _SignUpState extends State<OrgSignUpPage> {
               children: [
                 heading,
                 nameField,
+                emailField,
+                passwordField,
+                addressField,
+                contactNoField,
                 proofField,
                 errorMessage != null ? signUpErrorMessage : Container(),
                 isLoading ? const CircularProgressIndicator() : submitButton,
@@ -66,6 +74,79 @@ class _SignUpState extends State<OrgSignUpPage> {
           },
         ),
       );
+  
+  Widget get emailField => Padding(
+        padding: const EdgeInsets.only(bottom: 30),
+        child: TextFormField(
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
+            labelText: "Email",
+            hintText: "Enter an email",
+          ),
+          onSaved: (value) => setState(() => email = value),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return "Please enter an email";
+            }
+            return null;
+          },
+        ),
+      );
+
+  Widget get passwordField => Padding(
+        padding: const EdgeInsets.only(bottom: 30),
+        child: TextFormField(
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
+            labelText: "Password",
+            hintText: "At least 6 characters",
+          ),
+          obscureText: true,
+          onSaved: (value) => setState(() => password = value),
+          validator: (value) {
+            if (value == null || value.isEmpty || value.length < 6) {
+              return "Please enter a valid password with at least 6 characters";
+            }
+            return null;
+          },
+        ),
+      );
+
+  Widget get addressField => Padding(
+        padding: const EdgeInsets.only(bottom: 30),
+        child: TextFormField(
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
+            labelText: "Address",
+            hintText: "Enter your address",
+          ),
+          onSaved: (value) => setState(() => address = value),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return "Please enter your address";
+            }
+            return null;
+          },
+        ),
+      );
+
+  Widget get contactNoField => Padding(
+        padding: const EdgeInsets.only(bottom: 30),
+        child: TextFormField(
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
+            labelText: "Contact No",
+            hintText: "Enter your contact number",
+          ),
+          onSaved: (value) => setState(() => contactNo = value),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return "Please enter your contact number";
+            }
+            return null;
+          },
+        ),
+      );
 
   Widget get proofField => Padding(
         padding: const EdgeInsets.only(bottom: 30),
@@ -95,7 +176,7 @@ class _SignUpState extends State<OrgSignUpPage> {
               String? result = await context
                   .read<UserAuthProvider>()
                   .authService
-                  .signUpOrganization(organizationName!);
+                  .signUpOrganization(organizationName!, email!, password!, address!, contactNo!);
               if (mounted) {
                 Navigator.pop(context);
               } else {

@@ -90,13 +90,6 @@ class _OrganizationHomePageState extends State<OrganizationHomePage> {
           },
         ),
         ListTile(
-          title: const Text('Todo List'),
-          onTap: () {
-            Navigator.pop(context);
-            Navigator.pushNamed(context, "/");
-          },
-        ),
-        ListTile(
           title: const Text('Logout'),
           onTap: () {
             context.read<UserAuthProvider>().signOut();

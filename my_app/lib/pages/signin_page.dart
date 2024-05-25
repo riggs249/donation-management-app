@@ -58,7 +58,7 @@ class _SignInPageState extends State<SignInPage> {
           decoration: const InputDecoration(
               border: OutlineInputBorder(),
               label: Text("Email"),
-              hintText: "yourusername@example.com"),
+              hintText: "youremail@example.com"),
           onSaved: (value) => setState(() => email = value),
           validator: (value) {
             if (value == null || value.isEmpty) {
@@ -101,6 +101,9 @@ class _SignInPageState extends State<SignInPage> {
       case 'invalid-credential':
         message = 'Invalid sign in credentials!';
         break;
+      case 'not-approved':
+        message = 'Your organization is not yet approved by the admin!';
+        break;
     }
     return Padding(
       padding: const EdgeInsets.only(bottom: 30),
@@ -115,16 +118,55 @@ class _SignInPageState extends State<SignInPage> {
         onPressed: () async {
           if (_formKey.currentState!.validate()) {
             _formKey.currentState!.save();
-            String? message = await context.read<UserAuthProvider>().authService.signIn(email!, password!);
+            String? result = await context.read<UserAuthProvider>().authService.signIn(email!, password!);
 
-            if (message == "Success") {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => OrganizationHomePage()),
+            if (result == "donor") {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Login Successful'),
+                    content: const Text('You have successfully logged in as a donor.'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => AdminPage()), //admin page muna for the mean time
+                          );
+                        },
+                        child: const Text('OK'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            } else if (result == "organization") {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Login Successful'),
+                    content: const Text('You have successfully logged in as an organization.'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => OrganizationHomePage()),
+                          );
+                        },
+                        child: const Text('OK'),
+                      ),
+                    ],
+                  );
+                },
               );
             } else {
               setState(() {
-                errorMessage = message;
+                errorMessage = result;
               });
             }
           }

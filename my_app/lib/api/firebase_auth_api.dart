@@ -18,16 +18,16 @@ class FirebaseAuthApi {
     return auth.currentUser;
   }
 
-  Future<String?> signUpDonor(String name, String username, String password, String address, String contactNo) async {
+  Future<String?> signUpDonor(String name, String email, String password, String address, String contactNo) async {
     try {
       UserCredential userCredential = await auth.createUserWithEmailAndPassword(
-        email: '${username.toLowerCase().replaceAll(' ', '')}@example.com',
+        email: email,
         password: password,
       );
 
       await firestore.collection('donors').doc(userCredential.user!.uid).set({
         'name': name,
-        'username': username,
+        'email': email,
         'address': address,
         'contactNo': contactNo,
       });
@@ -40,17 +40,20 @@ class FirebaseAuthApi {
     }
   }
 
-  Future<String?> signUpOrganization(String organizationName) async {
+  Future<String?> signUpOrganization(String organizationName, String email, String password, String address, String contactNo) async {
     try {
       UserCredential userCredential = await auth.createUserWithEmailAndPassword(
-        email: '${organizationName.toLowerCase().replaceAll(' ', '')}@example.com',
-        password: 'organizationPassword',
+        email: email,
+        password: password,
       );
 
       String uid = userCredential.user!.uid;
 
       await firestore.collection('organizations').doc(uid).set({
         'organizationName': organizationName,
+        'email': email,
+        'address': address,
+        'contactNo': contactNo,
         'isApproved': false,
       });
 
@@ -65,7 +68,23 @@ class FirebaseAuthApi {
   Future<String?> signIn(String email, String password) async {
     try {
       UserCredential credentials = await auth.signInWithEmailAndPassword(email: email, password: password);
-      print(credentials);
+      String uid = credentials.user!.uid;
+
+      DocumentSnapshot donorDoc = await firestore.collection('donors').doc(uid).get();
+      if (donorDoc.exists) {
+        return "donor";
+      }
+
+      DocumentSnapshot orgDoc = await firestore.collection('organizations').doc(uid).get();
+      if (orgDoc.exists) {
+        bool isApproved = orgDoc.get('isApproved');
+        if (isApproved) {
+          return "organization";
+        } else {
+          return "not-approved";
+        }
+      }
+
       return "Success";
     } on FirebaseAuthException catch(e) {
       return e.code;

@@ -13,7 +13,7 @@ class DefSignUpPage extends StatefulWidget {
 class _SignUpState extends State<DefSignUpPage> {
   final _formKey = GlobalKey<FormState>();
   String? name;
-  String? username;
+  String? email;
   String? password;
   String? address;
   String? contactNo;
@@ -34,7 +34,7 @@ class _SignUpState extends State<DefSignUpPage> {
               children: [
                 heading,
                 nameField,
-                usernameField,
+                emailField,
                 passwordField,
                 addressField,
                 contactNoField,
@@ -75,18 +75,18 @@ class _SignUpState extends State<DefSignUpPage> {
         ),
       );
 
-  Widget get usernameField => Padding(
+  Widget get emailField => Padding(
         padding: const EdgeInsets.only(bottom: 30),
         child: TextFormField(
           decoration: const InputDecoration(
             border: OutlineInputBorder(),
-            labelText: "Username",
-            hintText: "Enter a username",
+            labelText: "Email",
+            hintText: "Enter an email",
           ),
-          onSaved: (value) => setState(() => username = value),
+          onSaved: (value) => setState(() => email = value),
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return "Please enter a username";
+              return "Please enter an email";
             }
             return null;
           },
@@ -159,7 +159,7 @@ class _SignUpState extends State<DefSignUpPage> {
               String? result = await context
                   .read<UserAuthProvider>()
                   .authService
-                  .signUpDonor(name!, username!, password!, address!, contactNo!);
+                  .signUpDonor(name!, email!, password!, address!, contactNo!);
               if (mounted) {
                 Navigator.pop(context);
               } else {

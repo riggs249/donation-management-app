@@ -55,6 +55,7 @@ class FirebaseAuthApi {
         'address': address,
         'contactNo': contactNo,
         'isApproved': false,
+        'isOpen': false,
       });
 
       return null;

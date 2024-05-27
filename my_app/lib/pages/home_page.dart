@@ -37,7 +37,7 @@ class _HomePageState extends State<HomePage> {
             return const SignInPage();
           }
 
-          return SignInPage(); //temporary for accessing org home page
+          return OrganizationHomePage(); //if user is logged in, display org temporarily
         });
   }
 }

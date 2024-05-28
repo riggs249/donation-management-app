@@ -27,8 +27,6 @@ class _OrganizationHomePageState extends State<OrganizationHomePage> {
     _fetchUserData();
   }
 
-  
-
   Future<void> _fetchUserData() async {
     QuerySnapshot snapshot = await FirebaseFirestore.instance
         .collection("organizations")
@@ -41,10 +39,8 @@ class _OrganizationHomePageState extends State<OrganizationHomePage> {
           : null;
       docId = snapshot.docs.first.id;
     });
-          print(snapshot.docs.first.id);
+    print(snapshot.docs.first.id);
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -117,78 +113,96 @@ class DonationListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'List of Donations',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.teal,
-            ),
-          ),
-          SizedBox(height: 20),
-          Expanded(
-            child: ListView.builder(
-              itemCount: 15, // Sample placeholder data
-              itemBuilder: (context, index) {
-                return Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+    return StreamBuilder(
+        stream: FirebaseFirestore.instance.collection('donations').snapshots(),
+        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'List of Donations',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.teal,
                   ),
-                  elevation: 3,
-                  margin: EdgeInsets.symmetric(vertical: 8),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: Colors.teal,
-                      child: Icon(Icons.favorite, color: Colors.white),
-                    ),
-                    title: Text(
-                      'Donation ${index + 1}',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text('Donation details...'),
-                    onTap: () {
-                      // Navigate to donation details page
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DonationDetailsPage(),
+                ),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: snapshot.data?.docs.length,
+                    itemBuilder: (context, index) {
+                      Map<String, dynamic> donData = snapshot.data?.docs[index]
+                          .data() as Map<String, dynamic>;
+                      String docId = snapshot.data!.docs[index].id;
+                      return Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        elevation: 3,
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        child: ListTile(
+                          leading: const CircleAvatar(
+                            backgroundColor: Colors.teal,
+                            child: Icon(Icons.favorite, color: Colors.white),
+                          ),
+                          title: Text(
+                            'Donation ${index + 1}',
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: Text('Donated by ${donData['email']}'),
+                          onTap: () {
+                            // Navigate to donation details page
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DonationDetailsPage(
+                                    docId: docId, donData: donData),
+                              ),
+                            );
+                          },
                         ),
                       );
                     },
                   ),
-                );
-              },
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
-    );
+          );
+        });
   }
 }
 
-  Future<void> tickStatus(String docId, bool status) async {
-    try {
-      if(status) {
-      await FirebaseFirestore.instance.collection('organizations').doc(docId).update({
+Future<void> tickStatus(String docId, bool status) async {
+  try {
+    if (status) {
+      await FirebaseFirestore.instance
+          .collection('organizations')
+          .doc(docId)
+          .update({
         'isOpen': true, // Update isOpen to true when ticked
       });
-      }else {
-      await FirebaseFirestore.instance.collection('organizations').doc(docId).update({
-        'isOpen': false, // Update isOpen to false 
+    } else {
+      await FirebaseFirestore.instance
+          .collection('organizations')
+          .doc(docId)
+          .update({
+        'isOpen': false, // Update isOpen to false
       });
-      }
-    } catch (e) {
-      print('Error approving organization: $e');
     }
+  } catch (e) {
+    print('Error approving organization: $e');
   }
-
-  bool _isChecked = false;
-
+}
 
 class ProfilePage extends StatefulWidget {
   final Map<String, dynamic>? orgData;
@@ -201,12 +215,10 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  bool _isChecked = false;
-
   @override
   Widget build(BuildContext context) {
     if (widget.orgData == null) {
-      return Center(
+      return const Center(
         child: CircularProgressIndicator(),
       );
     }
@@ -216,7 +228,7 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
+          const Text(
             'Organization Profile',
             style: TextStyle(
               fontSize: 28,
@@ -224,13 +236,13 @@ class _ProfilePageState extends State<ProfilePage> {
               color: Colors.teal,
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Card(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15),
             ),
             elevation: 5,
-            margin: EdgeInsets.symmetric(vertical: 8),
+            margin: const EdgeInsets.symmetric(vertical: 8),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -238,11 +250,12 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.business, color: Colors.teal, size: 30),
-                      SizedBox(width: 10),
+                      const Icon(Icons.business, color: Colors.teal, size: 30),
+                      const SizedBox(width: 10),
                       Text(
                         widget.orgData!['organizationName'] ?? 'No Name',
-                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -284,21 +297,26 @@ class _ProfilePageState extends State<ProfilePage> {
                   SizedBox(height: 10),
                   Row(
                     children: [
-                    Transform.translate(
-                      offset: Offset(-5.0, 0.0), // Apply negative horizontal offset
-                      child: Checkbox(
-                        value: widget.orgData!['isOpen'],
-                        onChanged: (bool? newValue) {
-                          setState(() {
-                            widget.orgData!['isOpen'] = newValue ?? false;
-                          });
-                          tickStatus(widget.docId!, widget.orgData!['isOpen']);
-                        },
-                        activeColor: Colors.teal, // Set the color of the checkbox to teal
+                      Transform.translate(
+                        offset: Offset(
+                            -5.0, 0.0), // Apply negative horizontal offset
+                        child: Checkbox(
+                          value: widget.orgData!['isOpen'],
+                          onChanged: (bool? newValue) {
+                            setState(() {
+                              widget.orgData!['isOpen'] = newValue ?? false;
+                            });
+                            tickStatus(
+                                widget.docId!, widget.orgData!['isOpen']);
+                          },
+                          activeColor: Colors
+                              .teal, // Set the color of the checkbox to teal
+                        ),
                       ),
-                    ),
                       Text(
-                        widget.orgData!['isOpen'] ? 'Donation Status (Open)' : 'Donation Status (Closed)',
+                        widget.orgData!['isOpen']
+                            ? 'Donation Status (Open)'
+                            : 'Donation Status (Closed)',
                         style: TextStyle(fontSize: 16),
                       ),
                     ],
@@ -341,4 +359,3 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 }
-

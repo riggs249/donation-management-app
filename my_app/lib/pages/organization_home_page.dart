@@ -52,7 +52,16 @@ class _OrganizationHomePageState extends State<OrganizationHomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Organization Home'),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Welcome back,'),
+            Text(
+              '${orgData?['organizationName']} ',
+              style: TextStyle(fontSize: 14, color: Colors.white),
+            ),
+          ],
+        ),
         backgroundColor: Colors.teal,
         elevation: 4.0,
         actions: [
@@ -111,74 +120,132 @@ class _OrganizationHomePageState extends State<OrganizationHomePage> {
 class DonationListPage extends StatelessWidget {
   const DonationListPage({super.key});
 
+  Future<String?> _getCurrentUserEmail() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    return user?.email;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('donations').snapshots(),
-        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          }
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
+    return FutureBuilder<String?>(
+      future: _getCurrentUserEmail(),
+      builder: (context, userSnapshot) {
+        if (userSnapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'List of Donations',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.teal,
+        if (userSnapshot.hasError) {
+          return Text('Error: ${userSnapshot.error}');
+        }
+
+        String? userEmail = userSnapshot.data;
+
+        if (userEmail == null) {
+          return const Center(child: Text('No user logged in'));
+        }
+
+        return StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('donations')
+              .where('orgEmail', isEqualTo: userEmail)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            }
+
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              return Stack(children: [
+                Positioned.fill(
+                  child: Image.asset(
+                    '../assets/images/heart.png', // Replace with your asset path
+                    fit: BoxFit.cover,
+                    color: Colors.black
+                        .withOpacity(0.15), // Optional: add some transparency
+                    colorBlendMode: BlendMode.darken,
                   ),
                 ),
-                const SizedBox(height: 20),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: snapshot.data?.docs.length,
-                    itemBuilder: (context, index) {
-                      Map<String, dynamic> donData = snapshot.data?.docs[index]
-                          .data() as Map<String, dynamic>;
-                      String docId = snapshot.data!.docs[index].id;
-                      return Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        elevation: 3,
-                        margin: const EdgeInsets.symmetric(vertical: 8),
-                        child: ListTile(
-                          leading: const CircleAvatar(
-                            backgroundColor: Colors.teal,
-                            child: Icon(Icons.favorite, color: Colors.white),
-                          ),
-                          title: Text(
-                            'Donation ${index + 1}',
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          subtitle: Text('Donated by ${donData['email']}'),
-                          onTap: () {
-                            // Navigate to donation details page
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => DonationDetailsPage(
-                                    docId: docId, donData: donData),
+                const Center(child: Text('No donations found'))
+              ]);
+            }
+
+            return Stack(children: [
+              Positioned.fill(
+                child: Image.asset(
+                  '../assets/images/heart.png', // Replace with your asset path
+                  fit: BoxFit.cover,
+                  color: Colors.black
+                      .withOpacity(0.15), // Optional: add some transparency
+                  colorBlendMode: BlendMode.darken,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'List of Donations',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: snapshot.data?.docs.length,
+                        itemBuilder: (context, index) {
+                          Map<String, dynamic> donData =
+                              snapshot.data?.docs[index].data()
+                                  as Map<String, dynamic>;
+                          String docId = snapshot.data!.docs[index].id;
+                          return Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            elevation: 3,
+                            margin: const EdgeInsets.symmetric(vertical: 8),
+                            child: ListTile(
+                              leading: const CircleAvatar(
+                                backgroundColor: Colors.teal,
+                                child:
+                                    Icon(Icons.favorite, color: Colors.white),
                               ),
-                            );
-                          },
-                        ),
-                      );
-                    },
-                  ),
+                              title: Text(
+                                'Donation ${index + 1}',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              subtitle: Text('Donated by ${donData['email']}'),
+                              onTap: () {
+                                // Navigate to donation details page
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => DonationDetailsPage(
+                                        docId: docId, donData: donData),
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          );
-        });
+              )
+            ]);
+          },
+        );
+      },
+    );
   }
 }
 

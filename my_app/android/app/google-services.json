@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "445090607092",
-    "project_id": "cmsc23-project-3bdb7",
-    "storage_bucket": "cmsc23-project-3bdb7.appspot.com"
+    "project_number": "776662480421",
+    "project_id": "cmsc23-546fb",
+    "storage_bucket": "cmsc23-546fb.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:445090607092:android:b1c54796f12480a8bb13a1",
+        "mobilesdk_app_id": "1:776662480421:android:e05e4a353efd556cab71cc",
         "android_client_info": {
           "package_name": "com.example.week9_authentication"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyD2UA21ZwHcIj8Ffwhg6smhDSiBJFtitgE"
+          "current_key": "AIzaSyANP-gDABz5iMFwzK6C0Z9tup_8eZsLANs"
         }
       ],
       "services": {

@@ -62,6 +62,22 @@ class FirebaseAuthApi {
     }
   }
 
+  Future<String?> addDonation(bool food, bool clothes, bool cash, bool necessities, String pickupOrDropoff) async {
+    try {
+      await firestore.collection('donations').doc("test1")
+      .set({
+        'food': food,
+        'clothes': clothes,
+        'cash': cash,
+        'necessities': necessities,
+        'modeofDelivery': pickupOrDropoff
+      });
+      return "succes";
+    } on FirebaseException catch (e) {
+      return "failed";
+    }
+  }
+
   Future<String?> signIn(String email, String password) async {
     try {
       UserCredential credentials = await auth.signInWithEmailAndPassword(email: email, password: password);
@@ -77,4 +93,6 @@ class FirebaseAuthApi {
   Future<void> signOut() async {
     await auth.signOut();
   }
+
+  
 }

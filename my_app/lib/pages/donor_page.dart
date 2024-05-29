@@ -100,5 +100,7 @@ class OrganizationsList extends StatelessWidget {
       print('Error approving organization: $e');
     }
   }
+
+  
 }
 

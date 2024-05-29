@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:week9_authentication/api/firebase_auth_api.dart';
 import 'signin_page.dart';
 import '../providers/auth_provider.dart';
 
@@ -12,7 +13,6 @@ class DonatePage extends StatefulWidget {
 }
 
 class _DonatePageState extends State<DonatePage> {
-
   bool? foodCheckboxValue = false;
   bool? clothesCheckboxValue = false;
   bool? cashCheckboxValue = false;
@@ -46,62 +46,61 @@ class _DonatePageState extends State<DonatePage> {
               'Details:',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-             // Widget to display organizations
+            // Widget to display organizations
             CheckboxListTile(
-              title: const Text("Food"),
-              value: foodCheckboxValue,
-              onChanged: (bool? value) {
-                setState(() {
-                  foodCheckboxValue = value;
-                });
-              }
-            ),
+                title: const Text("Food"),
+                value: foodCheckboxValue,
+                onChanged: (bool? value) {
+                  setState(() {
+                    foodCheckboxValue = value;
+                  });
+                }),
             CheckboxListTile(
-              title: const Text("Clothes"),
-              value: clothesCheckboxValue,
-              onChanged: (bool? value) {
-                setState(() {
-                  clothesCheckboxValue = value;
-                });
-              }
-            ),
+                title: const Text("Clothes"),
+                value: clothesCheckboxValue,
+                onChanged: (bool? value) {
+                  setState(() {
+                    clothesCheckboxValue = value;
+                  });
+                }),
             CheckboxListTile(
-              title: const Text("Cash"),
-              value: cashCheckboxValue,
-              onChanged: (bool? value) {
-                setState(() {
-                  cashCheckboxValue = value;
-                });
-              }
-            ),
+                title: const Text("Cash"),
+                value: cashCheckboxValue,
+                onChanged: (bool? value) {
+                  setState(() {
+                    cashCheckboxValue = value;
+                  });
+                }),
             CheckboxListTile(
-              title: const Text("Necessities"),
-              value: necessitiesCheckboxValue,
-              onChanged: (bool? value) {
-                setState(() {
-                  necessitiesCheckboxValue = value;
-                });
-              }
-            ),
+                title: const Text("Necessities"),
+                value: necessitiesCheckboxValue,
+                onChanged: (bool? value) {
+                  setState(() {
+                    necessitiesCheckboxValue = value;
+                  });
+                }),
             DropdownButton(
-              items: const [
-                DropdownMenuItem(child: Text("Pick-up"), value: "pickup"),
-                DropdownMenuItem(child: Text("Drop-off"), value: "dropoff"),
-              ],
-              
-              value: _dropdownValue,
-              onChanged: (String? value) {
-                setState(() {
-                  _dropdownValue = value;
-                });
-              }
-            ), 
+                items: const [
+                  DropdownMenuItem(child: Text("Pick-up"), value: "pickup"),
+                  DropdownMenuItem(child: Text("Drop-off"), value: "dropoff"),
+                ],
+                value: _dropdownValue,
+                onChanged: (String? value) {
+                  setState(() {
+                    _dropdownValue = value;
+                  });
+                }),
             SizedBox(height: 20),
-             // Widget to display donors
+            ElevatedButton(
+              onPressed: () async {
+                await context.read<UserAuthProvider>().authService.addDonation(foodCheckboxValue!, clothesCheckboxValue!, cashCheckboxValue!, necessitiesCheckboxValue!, _dropdownValue!);
+              },
+              child: Text('Donate'),
+            ),
+            // Widget to display donors
           ],
         ),
       ),
     );
   }
 }
-

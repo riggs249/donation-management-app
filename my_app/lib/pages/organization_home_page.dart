@@ -162,7 +162,7 @@ class DonationListPage extends StatelessWidget {
               return Stack(children: [
                 Positioned.fill(
                   child: Image.asset(
-                    '../assets/images/heart.png', // Replace with your asset path
+                    './assets/images/heart.png', // Replace with your asset path
                     fit: BoxFit.cover,
                     color: Colors.black
                         .withOpacity(0.15), // Optional: add some transparency
@@ -176,7 +176,7 @@ class DonationListPage extends StatelessWidget {
             return Stack(children: [
               Positioned.fill(
                 child: Image.asset(
-                  '../assets/images/heart.png', // Replace with your asset path
+                  './assets/images/heart.png', // Replace with your asset path
                   fit: BoxFit.cover,
                   color: Colors.black
                       .withOpacity(0.15), // Optional: add some transparency

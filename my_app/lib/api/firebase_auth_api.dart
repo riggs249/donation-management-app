@@ -66,15 +66,24 @@ class FirebaseAuthApi {
     }
   }
 
-  Future<String?> addDonation(bool food, bool clothes, bool cash, bool necessities, String pickupOrDropoff) async {
+  Future<String?> addDonation(String email, String orgEmail, String address, String weight, DateTime dateandTime, String contactNo, bool food, bool clothes, bool cash, bool necessities, String pickupOrDropoff) async {
     try {
-      await firestore.collection('donations').doc("test1")
-      .set({
+      await firestore.collection('donations')
+      .add({
+        'name': "john doe",
+        'email': email,
+        'orgEmail': orgEmail,
+        'address': address,
+        'contactNo': contactNo,
+        'category': "Category/ies",
+        'weight': weight,
+        'dateandTime': dateandTime,
         'food': food,
         'clothes': clothes,
         'cash': cash,
         'necessities': necessities,
-        'modeofDelivery': pickupOrDropoff
+        'modeofDelivery': pickupOrDropoff,
+        'status': "Pending"
       });
       return "succes";
     } on FirebaseException catch (e) {

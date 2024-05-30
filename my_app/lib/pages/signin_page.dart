@@ -134,7 +134,7 @@ class _SignInPageState extends State<SignInPage> {
                           Navigator.of(context).pop();
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (context) => AdminPage()), //admin page muna for the mean time
+                            MaterialPageRoute(builder: (context) => DonorPage()), //admin page muna for the mean time
                           );
                         },
                         child: const Text('OK'),

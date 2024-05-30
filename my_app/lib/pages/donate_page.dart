@@ -6,18 +6,25 @@ import 'signin_page.dart';
 import '../providers/auth_provider.dart';
 
 class DonatePage extends StatefulWidget {
-  const DonatePage({super.key});
+  final String? orgEmail;
+  const DonatePage({super.key, this.orgEmail});
 
   @override
   State<DonatePage> createState() => _DonatePageState();
 }
 
 class _DonatePageState extends State<DonatePage> {
+  final _formKey = GlobalKey<FormState>();
   bool? foodCheckboxValue = false;
   bool? clothesCheckboxValue = false;
   bool? cashCheckboxValue = false;
   bool? necessitiesCheckboxValue = false;
-  String? _dropdownValue = 'pickup';
+  DateTime? dateandTime;
+  DateTime? start = DateTime.now();
+  DateTime? end = DateTime(DateTime.now().year+2);
+  String? _dropdownValue = 'Pick-up';
+  String? weight='';
+  String? address='';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,9 +46,13 @@ class _DonatePageState extends State<DonatePage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
+
+        child: Form(
+          key: _formKey,
+          child:Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            
             Text(
               'Details:',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -78,11 +89,11 @@ class _DonatePageState extends State<DonatePage> {
                   setState(() {
                     necessitiesCheckboxValue = value;
                   });
-                }),
+                }), 
             DropdownButton(
                 items: const [
-                  DropdownMenuItem(child: Text("Pick-up"), value: "pickup"),
-                  DropdownMenuItem(child: Text("Drop-off"), value: "dropoff"),
+                  DropdownMenuItem(child: Text("Pick-up"), value: "Pick-up"),
+                  DropdownMenuItem(child: Text("Drop-off"), value: "Drop-off"),
                 ],
                 value: _dropdownValue,
                 onChanged: (String? value) {
@@ -90,17 +101,116 @@ class _DonatePageState extends State<DonatePage> {
                     _dropdownValue = value;
                   });
                 }),
+            _dropdownValue == "Pick-up" ? TextFormField(
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: "Pick-up address",
+                hintText: "Input address"
+              ),
+                onSaved: (value) {
+                  setState(() {
+                    address = value;
+                  }); 
+                },
+                validator: (value) {
+                  if(value == null || value.isEmpty) {
+                    return "please enter address";
+                  } return null;
+                },
+            ) : SizedBox(height: 0),
+            TextFormField(
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: "Date",
+                filled: true,
+                prefixIcon: Icon(Icons.calendar_month_outlined),
+                enabledBorder: OutlineInputBorder()
+              ),
+              readOnly: true,
+              onTap: () {
+                
+                showDateTimePicker(context: context).then((result) {
+                  setState(() {
+                    dateandTime = result;
+                  });
+                });
+              },
+              
+            ),
             SizedBox(height: 20),
+            TextFormField(
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: "Weight",
+                hintText: "Input weight"
+              ),
+              onSaved: (value) {
+                setState(() {
+                  weight = value;
+                });
+                weight=value;
+              },
+              validator: (value) {
+                  if(value == null || value.isEmpty) {
+                    return "please enter address";
+                  } return null;
+                },
+            ),
+            SizedBox(height: 20),
+            //Input
             ElevatedButton(
               onPressed: () async {
-                await context.read<UserAuthProvider>().authService.addDonation(foodCheckboxValue!, clothesCheckboxValue!, cashCheckboxValue!, necessitiesCheckboxValue!, _dropdownValue!);
+                if(_formKey.currentState!.validate()) {
+                  _formKey.currentState!.save();
+                }
+                await context.read<UserAuthProvider>().authService.addDonation("test2@example.com"!, widget.orgEmail!, address!, weight!, dateandTime!, "test contact no", foodCheckboxValue!, clothesCheckboxValue!, cashCheckboxValue!, necessitiesCheckboxValue!, _dropdownValue!);
               },
               child: Text('Donate'),
             ),
+
             // Widget to display donors
           ],
+
         ),
       ),
-    );
+    ));
   }
+
+  Future<DateTime?> showDateTimePicker({
+  required BuildContext context,
+  DateTime? initialDate,
+  DateTime? firstDate,
+  DateTime? lastDate,
+}) async {
+  initialDate ??= DateTime.now();
+  firstDate ??= initialDate.subtract(const Duration(days: 365 * 100));
+  lastDate ??= firstDate.add(const Duration(days: 365 * 200));
+
+  final DateTime? selectedDate = await showDatePicker(
+    context: context,
+    initialDate: initialDate,
+    firstDate: firstDate,
+    lastDate: lastDate,
+  );
+
+  if (selectedDate == null) return null;
+
+  if (!context.mounted) return selectedDate;
+
+  final TimeOfDay? selectedTime = await showTimePicker(
+    context: context,
+    initialTime: TimeOfDay.fromDateTime(initialDate),
+  );
+
+  return selectedTime == null
+      ? selectedDate
+      : DateTime(
+          selectedDate.year,
+          selectedDate.month,
+          selectedDate.day,
+          selectedTime.hour,
+          selectedTime.minute,
+        );
+}
+
 }

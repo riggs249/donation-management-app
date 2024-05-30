@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:week9_authentication/pages/admin_page.dart';
-import 'package:week9_authentication/pages/donor_page.dart';
-import 'package:week9_authentication/pages/organization_home_page.dart';
+import './donor_page.dart';
+import './organization_home_page.dart';
 import '../providers/auth_provider.dart';
 import 'default_signup_page.dart';
 
@@ -134,7 +133,7 @@ class _SignInPageState extends State<SignInPage> {
                           Navigator.of(context).pop();
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (context) => DonorPage()), //admin page muna for the mean time
+                            MaterialPageRoute(builder: (context) => DonorPage()),
                           );
                         },
                         child: const Text('OK'),

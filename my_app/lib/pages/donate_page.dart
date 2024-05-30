@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:week9_authentication/api/firebase_auth_api.dart';
 import 'signin_page.dart';
 import '../providers/auth_provider.dart';
 

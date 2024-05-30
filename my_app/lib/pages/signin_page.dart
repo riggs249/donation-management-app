@@ -42,23 +42,32 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
-  Widget get heading => const Padding(
-        padding: EdgeInsets.only(bottom: 30),
-        child: Text(
-          "Sign In",
-          style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-        ),
-      );
+  Widget get heading => Padding(
+    padding: EdgeInsets.only(bottom: 30),
+    child: Text(
+      "Sign In",
+      style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.teal), // Teal color for heading
+    ),
+  );
 
-  
 
   Widget get emailField => Padding(
-        padding: const EdgeInsets.only(bottom: 30),
+        padding: const EdgeInsets.only(bottom: 20),
         child: TextFormField(
-          decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              label: Text("Email"),
-              hintText: "youremail@example.com"),
+          decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(50), // Custom border radius
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.teal), // Custom active color
+              borderRadius: BorderRadius.circular(50), // Custom border radius
+            ),
+            filled: true, // Set to true to fill the background color
+            fillColor: Colors.grey[200], // Background color of the input field
+            labelText: "Email",
+            hintText: "youremail@example.com",
+            prefixIcon: Icon(Icons.email),
+          ),
           onSaved: (value) => setState(() => email = value),
           validator: (value) {
             if (value == null || value.isEmpty) {
@@ -72,10 +81,20 @@ class _SignInPageState extends State<SignInPage> {
   Widget get passwordField => Padding(
         padding: const EdgeInsets.only(bottom: 30),
         child: TextFormField(
-          decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              label: Text("Password"),
-              hintText: "******"),
+          decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(50), // Custom border radius
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.teal), // Custom active color
+              borderRadius: BorderRadius.circular(50), // Custom border radius
+            ),
+            filled: true, // Set to true to fill the background color
+            fillColor: Colors.grey[200], // Background color of the input field
+            labelText: "Password",
+            hintText: "******",
+            prefixIcon: Icon(Icons.lock),
+          ),
           obscureText: true,
           onSaved: (value) => setState(() => password = value),
           validator: (value) {
@@ -172,7 +191,20 @@ class _SignInPageState extends State<SignInPage> {
             }
           }
         },
-        child: const Text("Sign In"),
+        child: Text(
+          'Sign In',
+          style: TextStyle(
+            color: Colors.white, // Font color of the button text
+          ),
+        ),
+        style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.teal, // Custom button color
+            padding: const EdgeInsets.symmetric(vertical: 15), // Custom padding
+            minimumSize: Size(100, 0), // Minimum button width
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(50), // Custom border radius
+            ),
+          ),
       );
     
   Widget get signUpButton => Padding(

@@ -40,7 +40,7 @@ class FirebaseAuthApi {
     }
   }
 
-  Future<String?> signUpOrganization(String organizationName, String email, String password, String address, String contactNo) async {
+  Future<String?> signUpOrganization(String organizationName, String description, String email, String password, String address, String contactNo) async {
     try {
       UserCredential userCredential = await auth.createUserWithEmailAndPassword(
         email: email,
@@ -51,6 +51,7 @@ class FirebaseAuthApi {
 
       await firestore.collection('organizations').doc(uid).set({
         'organizationName': organizationName,
+        'description': description,
         'email': email,
         'address': address,
         'contactNo': contactNo,

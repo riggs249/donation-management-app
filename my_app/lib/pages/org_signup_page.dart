@@ -12,6 +12,7 @@ class OrgSignUpPage extends StatefulWidget {
 class _SignUpState extends State<OrgSignUpPage> {
   final _formKey = GlobalKey<FormState>();
   String? organizationName;
+  String? description;
   String? email;
   String? password;
   String? address;
@@ -34,6 +35,7 @@ class _SignUpState extends State<OrgSignUpPage> {
               children: [
                 heading,
                 nameField,
+                descriptionField,
                 emailField,
                 passwordField,
                 addressField,
@@ -69,6 +71,24 @@ class _SignUpState extends State<OrgSignUpPage> {
           validator: (value) {
             if (value == null || value.isEmpty) {
               return "Please enter the organization name";
+            }
+            return null;
+          },
+        ),
+      );
+  
+  Widget get descriptionField => Padding(
+        padding: const EdgeInsets.only(bottom: 30),
+        child: TextFormField(
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
+            labelText: "Description",
+            hintText: "Enter the organization description",
+          ),
+          onSaved: (value) => description = value,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return "Please enter the organization description";
             }
             return null;
           },
@@ -157,6 +177,7 @@ class _SignUpState extends State<OrgSignUpPage> {
               "Proof of Legitimacy",
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
+            SizedBox(height: 16),
             ElevatedButton(
               onPressed: () async {},
               child: const Text("Choose File"),
@@ -176,7 +197,7 @@ class _SignUpState extends State<OrgSignUpPage> {
               String? result = await context
                   .read<UserAuthProvider>()
                   .authService
-                  .signUpOrganization(organizationName!, email!, password!, address!, contactNo!);
+                  .signUpOrganization(organizationName!, description!, email!, password!, address!, contactNo!);
               if (mounted) {
                 Navigator.pop(context);
               } else {

@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:week9_authentication/pages/admin_page.dart';
+import 'package:week9_authentication/pages/donation_drive.dart';
 import 'package:week9_authentication/pages/donations_details_page.dart';
 import 'package:week9_authentication/pages/signin_page.dart';
 import '../providers/auth_provider.dart';
@@ -46,7 +47,7 @@ class _OrganizationHomePageState extends State<OrganizationHomePage> {
   Widget build(BuildContext context) {
     List<Widget> widgetOptions = [
       DonationListPage(),
-      AdminPage(),
+      DonationDrivesPage(),
       ProfilePage(orgData: orgData, docId: docId),
     ];
 

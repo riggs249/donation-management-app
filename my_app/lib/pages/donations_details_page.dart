@@ -76,6 +76,23 @@ class _DonationDetailsPageState extends State<DonationDetailsPage> {
     }
   }
 
+  List<String> _getCategories() {
+    List<String> categories = [];
+    if (widget.donData!['cash'] == true) {
+      categories.add('Cash');
+    }
+    if (widget.donData!['clothes'] == true) {
+      categories.add('Clothes');
+    }
+    if (widget.donData!['food'] == true) {
+      categories.add('Food');
+    }
+    if (widget.donData!['necessities'] == true) {
+      categories.add('Necessities');
+    }
+    return categories;
+  }
+
   @override
   Widget build(BuildContext context) {
     // Format the date for display
@@ -88,16 +105,18 @@ class _DonationDetailsPageState extends State<DonationDetailsPage> {
       formattedTime = DateFormat.jm().format(donationDate);
     }
 
+    List<String> categories = _getCategories();
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Donation Details'),
         backgroundColor: Colors.teal,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: _isLoading
-            ? Center(child: CircularProgressIndicator())
-            : Column(
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
@@ -124,11 +143,6 @@ class _DonationDetailsPageState extends State<DonationDetailsPage> {
                               const Icon(Icons.person,
                                   color: Colors.teal, size: 26),
                               const SizedBox(width: 10),
-                              // const Text(
-                              //   "Donor: ",
-                              //   style: TextStyle(
-                              //       fontSize: 18, fontWeight: FontWeight.bold),
-                              // ),
                               Text(userData!['name'],
                                   style: const TextStyle(fontSize: 18))
                             ],
@@ -200,8 +214,10 @@ class _DonationDetailsPageState extends State<DonationDetailsPage> {
                                     fontWeight: FontWeight.bold,
                                     color: Colors.teal),
                               ),
-                              Text(widget.donData!['category'],
-                                  style: const TextStyle(fontSize: 18))
+                              Expanded(
+                                child: Text(categories.join(', '),
+                                    style: const TextStyle(fontSize: 18)),
+                              ),
                             ],
                           ),
                           const SizedBox(height: 5),
@@ -372,7 +388,7 @@ class _DonationDetailsPageState extends State<DonationDetailsPage> {
                   ),
                 ],
               ),
-      ),
+            ),
     );
   }
 }

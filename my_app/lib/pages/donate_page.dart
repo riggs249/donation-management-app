@@ -6,8 +6,10 @@ import 'signin_page.dart';
 import '../providers/auth_provider.dart';
 
 class DonatePage extends StatefulWidget {
+  final String? donorName;
+  final String? donorEmail;
   final String? orgEmail;
-  const DonatePage({super.key, this.orgEmail});
+  const DonatePage({super.key, this.donorName, this.donorEmail, this.orgEmail});
 
   @override
   State<DonatePage> createState() => _DonatePageState();
@@ -163,7 +165,7 @@ class _DonatePageState extends State<DonatePage> {
                 if(_formKey.currentState!.validate()) {
                   _formKey.currentState!.save();
                 }
-                await context.read<UserAuthProvider>().authService.addDonation("test2@example.com"!, widget.orgEmail!, address!, weight!, dateandTime!, "test contact no", foodCheckboxValue!, clothesCheckboxValue!, cashCheckboxValue!, necessitiesCheckboxValue!, _dropdownValue!);
+                await context.read<UserAuthProvider>().authService.addDonation(widget.donorName!, widget.donorEmail!, widget.orgEmail!, address!, weight!, dateandTime!, "test contact no", foodCheckboxValue!, clothesCheckboxValue!, cashCheckboxValue!, necessitiesCheckboxValue!, _dropdownValue!);
               },
               child: Text('Donate'),
             ),

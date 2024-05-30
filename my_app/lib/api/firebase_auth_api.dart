@@ -66,11 +66,11 @@ class FirebaseAuthApi {
     }
   }
 
-  Future<String?> addDonation(String email, String orgEmail, String address, String weight, DateTime dateandTime, String contactNo, bool food, bool clothes, bool cash, bool necessities, String pickupOrDropoff) async {
+  Future<String?> addDonation(String name, String email, String orgEmail, String address, String weight, DateTime dateandTime, String contactNo, bool food, bool clothes, bool cash, bool necessities, String pickupOrDropoff) async {
     try {
       await firestore.collection('donations')
       .add({
-        'name': "john doe",
+        'name': name,
         'email': email,
         'orgEmail': orgEmail,
         'address': address,

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:week9_authentication/pages/donate_page.dart';
@@ -79,7 +80,7 @@ Future<void> _fetchUserData() async {
               'Organizations:',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            Expanded(child: OrganizationsList()), // Widget to display organizations
+            Expanded(child: OrganizationsList(donorData?['name'], donorData?['email'])), // Widget to display organizations
             SizedBox(height: 20),
           ],
         ),
@@ -89,6 +90,9 @@ Future<void> _fetchUserData() async {
 }
 
 class OrganizationsList extends StatelessWidget {
+  OrganizationsList(this.donorName, this.donorEmail);
+  String? donorName;
+  String? donorEmail;
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
@@ -113,7 +117,7 @@ class OrganizationsList extends StatelessWidget {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => DonatePage(orgEmail: data['email'])));
+                          MaterialPageRoute(builder: (context) => DonatePage(donorName: donorName, donorEmail: donorEmail, orgEmail : data['email'])));
                       },
                       child: Text('Donate'),
                     ),
@@ -137,6 +141,10 @@ class OrganizationsList extends StatelessWidget {
 
 }
 
+Future<String?> _getCurrentUserEmail() async {
+  User? user = FirebaseAuth.instance.currentUser;
+  return user?.email;
+}
 // class DonorPage extends StatelessWidget {
 
 //   @override

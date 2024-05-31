@@ -1,13 +1,16 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
-
-
+import 'package:firebase_storage/firebase_storage.dart';
 
 class DonationDrivesPage extends StatefulWidget {
-  const DonationDrivesPage({Key? key}) : super(key: key);
+  final String orgEmail;
+
+  const DonationDrivesPage({Key? key, required this.orgEmail})
+      : super(key: key);
 
   @override
   _DonationDrivesPageState createState() => _DonationDrivesPageState();
@@ -20,14 +23,18 @@ class _DonationDrivesPageState extends State<DonationDrivesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Donation Drives'),
+        title: const Text('Donation Drives',
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
         backgroundColor: Colors.teal,
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: _firestore.collection('donation_drives').snapshots(),
+        stream: _firestore
+            .collection('donation_drives')
+            .where('orgEmail', isEqualTo: widget.orgEmail)
+            .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
 
           var drives = snapshot.data!.docs;
@@ -41,15 +48,19 @@ class _DonationDrivesPageState extends State<DonationDrivesPage> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 elevation: 5,
-                margin: EdgeInsets.all(10),
+                margin: const EdgeInsets.all(10),
                 child: ListTile(
-                  title: Text(drive['title']),
+                  title: Text(drive['title'],
+                      style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.teal)),
                   subtitle: Text(drive['description']),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                        icon: Icon(Icons.edit, color: Colors.teal),
+                        icon: const Icon(Icons.edit, color: Colors.teal),
                         onPressed: () {
                           // Navigate to update page
                           Navigator.push(
@@ -62,9 +73,12 @@ class _DonationDrivesPageState extends State<DonationDrivesPage> {
                         },
                       ),
                       IconButton(
-                        icon: Icon(Icons.delete, color: Colors.red),
+                        icon: const Icon(Icons.delete, color: Colors.red),
                         onPressed: () {
-                          _firestore.collection('donation_drives').doc(drive.id).delete();
+                          _firestore
+                              .collection('donation_drives')
+                              .doc(drive.id)
+                              .delete();
                         },
                       ),
                     ],
@@ -74,7 +88,8 @@ class _DonationDrivesPageState extends State<DonationDrivesPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => DonationDriveDetailsPage(driveId: drive.id),
+                        builder: (context) =>
+                            DonationDriveDetailsPage(driveId: drive.id),
                       ),
                     );
                   },
@@ -90,20 +105,24 @@ class _DonationDrivesPageState extends State<DonationDrivesPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => CreateDonationDrivePage(),
+              builder: (context) =>
+                  CreateDonationDrivePage(orgEmail: widget.orgEmail),
             ),
           );
         },
-        child: Icon(Icons.add),
         backgroundColor: Colors.teal,
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }
 }
 
-
-
 class CreateDonationDrivePage extends StatefulWidget {
+  final String orgEmail;
+
+  const CreateDonationDrivePage({Key? key, required this.orgEmail})
+      : super(key: key);
+
   @override
   _CreateDonationDrivePageState createState() =>
       _CreateDonationDrivePageState();
@@ -119,6 +138,7 @@ class _CreateDonationDrivePageState extends State<CreateDonationDrivePage> {
       await _firestore.collection('donation_drives').add({
         'title': _titleController.text,
         'description': _descriptionController.text,
+        'orgEmail': widget.orgEmail,
       });
       Navigator.pop(context);
     } catch (e) {
@@ -130,7 +150,7 @@ class _CreateDonationDrivePageState extends State<CreateDonationDrivePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create Donation Drive'),
+        title: const Text('Create Donation Drive'),
         backgroundColor: Colors.teal,
       ),
       body: Padding(
@@ -139,16 +159,16 @@ class _CreateDonationDrivePageState extends State<CreateDonationDrivePage> {
           children: [
             TextField(
               controller: _titleController,
-              decoration: InputDecoration(labelText: 'Title'),
+              decoration: const InputDecoration(labelText: 'Title'),
             ),
             TextField(
               controller: _descriptionController,
-              decoration: InputDecoration(labelText: 'Description'),
+              decoration: const InputDecoration(labelText: 'Description'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _createDonationDrive,
-              child: Text('Create'),
+              child: const Text('Create'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.teal,
               ),
@@ -159,7 +179,6 @@ class _CreateDonationDrivePageState extends State<CreateDonationDrivePage> {
     );
   }
 }
-
 
 class EditDonationDrivePage extends StatefulWidget {
   final String driveId;
@@ -183,14 +202,20 @@ class _EditDonationDrivePageState extends State<EditDonationDrivePage> {
   }
 
   Future<void> _loadDriveData() async {
-    DocumentSnapshot drive = await _firestore.collection('donation_drives').doc(widget.driveId).get();
+    DocumentSnapshot drive = await _firestore
+        .collection('donation_drives')
+        .doc(widget.driveId)
+        .get();
     _titleController.text = drive['title'];
     _descriptionController.text = drive['description'];
   }
 
   Future<void> _updateDonationDrive() async {
     try {
-      await _firestore.collection('donation_drives').doc(widget.driveId).update({
+      await _firestore
+          .collection('donation_drives')
+          .doc(widget.driveId)
+          .update({
         'title': _titleController.text,
         'description': _descriptionController.text,
       });
@@ -234,24 +259,23 @@ class _EditDonationDrivePageState extends State<EditDonationDrivePage> {
   }
 }
 
-
-
 class DonationDriveDetailsPage extends StatefulWidget {
   final String driveId;
 
-  const DonationDriveDetailsPage({Key? key, required this.driveId}) : super(key: key);
+  const DonationDriveDetailsPage({Key? key, required this.driveId})
+      : super(key: key);
 
   @override
-  _DonationDriveDetailsPageState createState() => _DonationDriveDetailsPageState();
+  _DonationDriveDetailsPageState createState() =>
+      _DonationDriveDetailsPageState();
 }
 
 class _DonationDriveDetailsPageState extends State<DonationDriveDetailsPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   Map<String, dynamic>? driveData;
   List<DocumentSnapshot> linkedDonations = [];
-  Map<int, File> _proofs = {};
   List<File> images = [];
-  int _nextProofId = 0;
+  List<String> imageUrls = [];
 
   @override
   void initState() {
@@ -261,17 +285,26 @@ class _DonationDriveDetailsPageState extends State<DonationDriveDetailsPage> {
   }
 
   Future<void> _loadDriveData() async {
-    DocumentSnapshot drive = await _firestore.collection('donation_drives').doc(widget.driveId).get();
+    DocumentSnapshot drive = await _firestore
+        .collection('donation_drives')
+        .doc(widget.driveId)
+        .get();
     setState(() {
       driveData = drive.data() as Map<String, dynamic>;
     });
   }
 
   Future<void> _loadLinkedDonations() async {
-    DocumentSnapshot drive = await _firestore.collection('donation_drives').doc(widget.driveId).get();
+    DocumentSnapshot drive = await _firestore
+        .collection('donation_drives')
+        .doc(widget.driveId)
+        .get();
     List<dynamic> linkedDonationIds = drive['linked_donations'] ?? [];
     if (linkedDonationIds.isNotEmpty) {
-      QuerySnapshot donationsSnapshot = await _firestore.collection('donations').where(FieldPath.documentId, whereIn: linkedDonationIds).get();
+      QuerySnapshot donationsSnapshot = await _firestore
+          .collection('donations')
+          .where(FieldPath.documentId, whereIn: linkedDonationIds)
+          .get();
       setState(() {
         linkedDonations = donationsSnapshot.docs;
       });
@@ -280,13 +313,36 @@ class _DonationDriveDetailsPageState extends State<DonationDriveDetailsPage> {
 
   Future<void> _addPhoto() async {
     final picker = ImagePicker();
-    final pickedFiles = await picker.pickImage(source: ImageSource.camera);
+    final pickedFile = await picker.pickImage(source: ImageSource.camera);
 
-    if (pickedFiles != null) {
+    if (pickedFile != null) {
+      File imageFile = File(pickedFile.path);
       setState(() {
-        _proofs[_nextProofId++] = File(pickedFiles.path);
-        images.add(File(pickedFiles.path));
+        images.add(imageFile);
       });
+
+      // Upload image to Firebase Storage
+      try {
+        final storageRef = FirebaseStorage.instance.ref().child(
+            'donation_drives/${widget.driveId}/${DateTime.now().millisecondsSinceEpoch}.jpg');
+        final uploadTask = storageRef.putFile(imageFile);
+        final snapshot = await uploadTask.whenComplete(() {});
+        final imageUrl = await snapshot.ref.getDownloadURL();
+
+        // Store image URL in Firestore
+        await _firestore
+            .collection('donation_drives')
+            .doc(widget.driveId)
+            .update({
+          'photos': FieldValue.arrayUnion([imageUrl])
+        });
+
+        setState(() {
+          imageUrls.add(imageUrl);
+        });
+      } catch (e) {
+        print('Error uploading image: $e');
+      }
     }
   }
 
@@ -304,11 +360,20 @@ class _DonationDriveDetailsPageState extends State<DonationDriveDetailsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(driveData!['title'], style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.teal)),
+                  Text(driveData!['title'],
+                      style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.teal)),
                   SizedBox(height: 10),
-                  Text(driveData!['description'], style: TextStyle(fontSize: 18)),
+                  Text(driveData!['description'],
+                      style: TextStyle(fontSize: 18)),
                   SizedBox(height: 20),
-                  Text('Linked Donations:', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.teal)),
+                  Text('Linked Donations:',
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.teal)),
                   SizedBox(height: 10),
                   if (linkedDonations.isNotEmpty)
                     for (var donation in linkedDonations)
@@ -319,20 +384,21 @@ class _DonationDriveDetailsPageState extends State<DonationDriveDetailsPage> {
                   if (linkedDonations.isEmpty)
                     Text('No donations linked to this drive yet.'),
                   SizedBox(height: 20),
-                  Text('Photos:', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.teal)),
+                  Text('Photos:',
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.teal)),
                   SizedBox(height: 10),
-                  // if (driveData!['photos'] != null)
-                  //   for (String photoUrl in driveData!['photos'])
-                  //     Image.network(photoUrl),
-                  // SizedBox(height: 20),
-                  // TextField(
-                  //   controller: _photoUrlController,
-                  //   decoration: InputDecoration(labelText: 'Photo URL'),
-                  // ),
+                  if (driveData!['photos'] != null)
+                    for (String photoUrl in driveData!['photos'])
+                      Image.network(photoUrl),
+                  SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: _addPhoto,
                     child: Text('Add Photo'),
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
+                    style:
+                        ElevatedButton.styleFrom(backgroundColor: Colors.teal),
                   ),
                 ],
               ),

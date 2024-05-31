@@ -12,11 +12,17 @@ class AdminPage extends StatelessWidget {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Admin Dashboard'),
+          title: Text(
+            'Admin Dashboard',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold
+            ),
+          ),
           backgroundColor: Colors.teal,
           actions: [
             IconButton(
-              icon: Icon(Icons.logout),
+              icon: Icon(Icons.logout, color: Colors.white),
               onPressed: () async {
                 await context.read<UserAuthProvider>().signOut();
                 Navigator.pushAndRemoveUntil(
@@ -317,7 +323,7 @@ class DonationTile extends StatelessWidget {
         ],
       );
     } else {
-      return SizedBox.shrink(); // If mode of delivery is unknown or not specified, don't display any extra details
+      return SizedBox.shrink();
     }
   }
 }

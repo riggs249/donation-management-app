@@ -1,6 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:telephony/telephony.dart';
+import 'package:week9_authentication/providers/auth_provider.dart';
 
 class DonationDetailsPage extends StatefulWidget {
   final String docId;
@@ -17,6 +21,7 @@ class DonationDetailsPage extends StatefulWidget {
 class _DonationDetailsPageState extends State<DonationDetailsPage> {
   Map<String, dynamic>? userData;
   bool _isLoading = true;
+  User? org;
   String selectedStatus = 'Pending';
   String? selectedDriveId;
   List<DocumentSnapshot> donationDrives = [];
@@ -27,19 +32,20 @@ class _DonationDetailsPageState extends State<DonationDetailsPage> {
     'Complete',
     'Canceled',
   ];
+  final Telephony telephony = Telephony.instance;
 
   @override
   void initState() {
     super.initState();
     if (widget.donData != null && widget.donData!['email'] != null) {
       _fetchUserData();
+      org = context.read<UserAuthProvider>().user;
     } else {
       setState(() {
         _isLoading = false;
       });
     }
     selectedStatus = widget.donData!['status'];
-        // _loadDonationData();
     _loadDonationDrives();
   }
 
@@ -67,7 +73,10 @@ class _DonationDetailsPageState extends State<DonationDetailsPage> {
 
   Future<void> changeStatus(String docId, String status) async {
     try {
-      await FirebaseFirestore.instance.collection('donations').doc(docId).update({
+      await FirebaseFirestore.instance
+          .collection('donations')
+          .doc(docId)
+          .update({
         'status': status,
       });
     } catch (e) {
@@ -75,25 +84,60 @@ class _DonationDetailsPageState extends State<DonationDetailsPage> {
     }
   }
 
-  
-
   Future<void> _loadDonationDrives() async {
-    QuerySnapshot drivesSnapshot = await FirebaseFirestore.instance.collection('donation_drives').get();
+    QuerySnapshot drivesSnapshot = await FirebaseFirestore.instance
+        .collection('donation_drives')
+        .where('orgEmail', isEqualTo: org!.email!)
+        .get();
     setState(() {
-      donationDrives = drivesSnapshot.docs;
+      donationDrives =
+          (drivesSnapshot.docs.isNotEmpty ? drivesSnapshot.docs : []);
     });
+    print('$donationDrives DASFJKHASDKLDASKLJASDJLK');
   }
 
   Future<void> _linkToDrive() async {
     if (selectedDriveId != null) {
       try {
-        await FirebaseFirestore.instance.collection('donation_drives').doc(selectedDriveId).update({
+        DocumentSnapshot driveSnapshot = await FirebaseFirestore.instance
+            .collection('donation_drives')
+            .doc(selectedDriveId)
+            .get();
+        String driveTitle = driveSnapshot['title'];
+        await FirebaseFirestore.instance
+            .collection('donation_drives')
+            .doc(selectedDriveId)
+            .update({
           'linked_donations': FieldValue.arrayUnion([widget.docId]),
         });
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Donation linked to drive successfully')));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Donation linked to drive successfully')));
+        _sendSms(driveTitle);
       } catch (e) {
         print('Error linking donation to drive: $e');
       }
+    }
+  }
+
+  void _sendSms(String driveTitle) async {
+    String? phoneNumber = userData?['contactNo'];
+    if (phoneNumber != null && phoneNumber.isNotEmpty) {
+      final bool? result = await telephony.requestPhoneAndSmsPermissions;
+      if (result != null && result) {
+        telephony.sendSms(
+          to: phoneNumber,
+          message:
+              'AUTOSMS: Your donation has been successfully linked to the drive: $driveTitle!',
+        );
+      } else {
+        print('Permission to send SMS not granted.');
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Permission to send SMS not granted.')));
+      }
+    } else {
+      print('User phone number is not available.');
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('User phone number is not available.')));
     }
   }
 
@@ -335,7 +379,6 @@ class _DonationDetailsPageState extends State<DonationDetailsPage> {
                                     style: const TextStyle(fontSize: 18))
                               ],
                             ),
-                          // const SizedBox(height: 5),
                         ],
                       ),
                     ),
@@ -383,7 +426,6 @@ class _DonationDetailsPageState extends State<DonationDetailsPage> {
                     ),
                   ),
                   SizedBox(height: 20),
-
                   DropdownButtonFormField<String>(
                     value: selectedDriveId,
                     hint: Text('Select Donation Drive'),
@@ -403,9 +445,10 @@ class _DonationDetailsPageState extends State<DonationDetailsPage> {
                   ElevatedButton(
                     onPressed: _linkToDrive,
                     child: Text('Link to Drive'),
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.teal,
+                        foregroundColor: Colors.white),
                   ),
-
                   Center(
                     child: ElevatedButton(
                       onPressed: () {

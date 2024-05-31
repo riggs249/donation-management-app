@@ -71,7 +71,7 @@ class _SignUpState extends State<OrgSignUpPage> {
               borderRadius: BorderRadius.circular(50), // Custom border radius
             ),
             filled: true, // Set to true to fill the background color
-            fillColor: Colors.grey[200], // Background color of the input field
+            fillColor: Colors.grey[50], // Background color of the input field
             labelText: "Organization Name",
             hintText: "Enter the organization name",
           ),
@@ -97,7 +97,7 @@ class _SignUpState extends State<OrgSignUpPage> {
               borderRadius: BorderRadius.circular(50), // Custom border radius
             ),
             filled: true, // Set to true to fill the background color
-            fillColor: Colors.grey[200], // Background color of the input field
+            fillColor: Colors.grey[50], // Background color of the input field
             labelText: "Description",
             hintText: "Enter the organization description",
           ),
@@ -123,7 +123,7 @@ class _SignUpState extends State<OrgSignUpPage> {
               borderRadius: BorderRadius.circular(50), // Custom border radius
             ),
             filled: true, // Set to true to fill the background color
-            fillColor: Colors.grey[200], // Background color of the input field
+            fillColor: Colors.grey[50], // Background color of the input field
             labelText: "Email",
             hintText: "Enter an email",
           ),
@@ -149,7 +149,7 @@ class _SignUpState extends State<OrgSignUpPage> {
               borderRadius: BorderRadius.circular(50), // Custom border radius
             ),
             filled: true, // Set to true to fill the background color
-            fillColor: Colors.grey[200], // Background color of the input field
+            fillColor: Colors.grey[50], // Background color of the input field
             labelText: "Password",
             hintText: "At least 6 characters",
           ),
@@ -176,7 +176,7 @@ class _SignUpState extends State<OrgSignUpPage> {
               borderRadius: BorderRadius.circular(50), // Custom border radius
             ),
             filled: true, // Set to true to fill the background color
-            fillColor: Colors.grey[200], // Background color of the input field
+            fillColor: Colors.grey[50], // Background color of the input field
             labelText: "Address",
             hintText: "Enter your address",
           ),
@@ -191,7 +191,7 @@ class _SignUpState extends State<OrgSignUpPage> {
       );
 
   Widget get contactNoField => Padding(
-        padding: const EdgeInsets.only(bottom: 30),
+        padding: const EdgeInsets.only(bottom: 20),
         child: TextFormField(
           decoration: InputDecoration(
             border: OutlineInputBorder(
@@ -202,7 +202,7 @@ class _SignUpState extends State<OrgSignUpPage> {
               borderRadius: BorderRadius.circular(50), // Custom border radius
             ),
             filled: true, // Set to true to fill the background color
-            fillColor: Colors.grey[200], // Background color of the input field
+            fillColor: Colors.grey[50], // Background color of the input field
             labelText: "Contact No",
             hintText: "Enter your contact number",
           ),
@@ -221,13 +221,22 @@ class _SignUpState extends State<OrgSignUpPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Proof of Legitimacy",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
             ElevatedButton(
               onPressed: () async {},
-              child: const Text("Choose File"),
+              child: Text(
+                'Choose Photo Proof',
+                style: TextStyle(
+                  color: Colors.white, // Font color of the button text
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black, // Custom button color
+                padding: const EdgeInsets.symmetric(vertical: 20), // Custom padding
+                minimumSize: Size(350, 0), // Minimum button width
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(50), // Custom border radius
+                ),
+              ),
             ),
           ],
         ),

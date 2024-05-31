@@ -69,7 +69,7 @@ class _SignUpState extends State<DefSignUpPage> {
               borderRadius: BorderRadius.circular(50), // Custom border radius
             ),
             filled: true, // Set to true to fill the background color
-            fillColor: Colors.grey[200], // Background color of the input field
+            fillColor: Colors.grey[50], // Background color of the input field
             labelText: "Name",
             hintText: "Enter your full name",
           ),
@@ -95,7 +95,7 @@ class _SignUpState extends State<DefSignUpPage> {
               borderRadius: BorderRadius.circular(50), // Custom border radius
             ),
             filled: true, // Set to true to fill the background color
-            fillColor: Colors.grey[200], // Background color of the input field
+            fillColor: Colors.grey[50], // Background color of the input field
             labelText: "Email",
             hintText: "Enter an email",
           ),
@@ -121,7 +121,7 @@ class _SignUpState extends State<DefSignUpPage> {
               borderRadius: BorderRadius.circular(50), // Custom border radius
             ),
             filled: true, // Set to true to fill the background color
-            fillColor: Colors.grey[200], // Background color of the input field
+            fillColor: Colors.grey[50], // Background color of the input field
             labelText: "Password",
             hintText: "At least 6 characters",
           ),
@@ -148,7 +148,7 @@ class _SignUpState extends State<DefSignUpPage> {
               borderRadius: BorderRadius.circular(50), // Custom border radius
             ),
             filled: true, // Set to true to fill the background color
-            fillColor: Colors.grey[200], // Background color of the input field
+            fillColor: Colors.grey[50], // Background color of the input field
             labelText: "Address",
             hintText: "Enter your address",
           ),
@@ -174,7 +174,7 @@ class _SignUpState extends State<DefSignUpPage> {
               borderRadius: BorderRadius.circular(50), // Custom border radius
             ),
             filled: true, // Set to true to fill the background color
-            fillColor: Colors.grey[200], // Background color of the input field
+            fillColor: Colors.grey[50], // Background color of the input field
             labelText: "Contact No",
             hintText: "Enter your contact number",
           ),
@@ -225,13 +225,13 @@ class _SignUpState extends State<DefSignUpPage> {
           ),
         ),
         style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.teal, // Custom button color
-            padding: const EdgeInsets.symmetric(vertical: 15), // Custom padding
-            minimumSize: Size(100, 0), // Minimum button width
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(50), // Custom border radius
-            ),
+          backgroundColor: Colors.teal, // Custom button color
+          padding: const EdgeInsets.symmetric(vertical: 15), // Custom padding
+          minimumSize: Size(100, 0), // Minimum button width
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(50), // Custom border radius
           ),
+        ),
       );
 
   Widget get signUpButton => Padding(

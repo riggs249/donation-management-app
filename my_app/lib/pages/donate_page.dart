@@ -26,8 +26,8 @@ class _DonatePageState extends State<DonatePage> {
   DateTime? end = DateTime(DateTime.now().year+2);
   String? _dropdownValue = 'Pick-up';
   String? weight;
-  String? address;
-  String? contactNo;
+  String? address = "";
+  String? contactNo = "";
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -1,15 +1,18 @@
+import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:telephony/telephony.dart';
+import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import '../providers/auth_provider.dart';
 
 class DonationDetailsPage extends StatefulWidget {
   final String docId;
   final Map<String, dynamic>? donData;
-
   const DonationDetailsPage(
       {Key? key, required this.docId, required this.donData})
       : super(key: key);
@@ -33,6 +36,8 @@ class _DonationDetailsPageState extends State<DonationDetailsPage> {
     'Canceled',
   ];
   final Telephony telephony = Telephony.instance;
+  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
+  QRViewController? qrController;
 
   @override
   void initState() {
@@ -47,6 +52,12 @@ class _DonationDetailsPageState extends State<DonationDetailsPage> {
     }
     selectedStatus = widget.donData!['status'];
     _loadDonationDrives();
+  }
+
+  @override
+  void dispose() {
+    qrController?.dispose();
+    super.dispose();
   }
 
   Future<void> _fetchUserData() async {
@@ -157,6 +168,24 @@ class _DonationDetailsPageState extends State<DonationDetailsPage> {
     }
     return categories;
   }
+
+  void _processQRCode(String qrCode) {
+    final expectedQRCode = '${userData!['email']}${org!.email!}';
+    if (qrCode == expectedQRCode) {
+      changeStatus(widget.docId, 'Complete');
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('QR code matched. Status updated to Complete!')));
+      setState(() {
+        selectedStatus = 'Complete';
+      });
+      Navigator.pop(context);
+      
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('QR code did not match. Cannot process.')));
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -426,29 +455,6 @@ class _DonationDetailsPageState extends State<DonationDetailsPage> {
                     ),
                   ),
                   SizedBox(height: 20),
-                  DropdownButtonFormField<String>(
-                    value: selectedDriveId,
-                    hint: Text('Select Donation Drive'),
-                    items: donationDrives.map((drive) {
-                      return DropdownMenuItem<String>(
-                        value: drive.id,
-                        child: Text(drive['title']),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedDriveId = value;
-                      });
-                    },
-                  ),
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: _linkToDrive,
-                    child: Text('Link to Drive'),
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.teal,
-                        foregroundColor: Colors.white),
-                  ),
                   Center(
                     child: ElevatedButton(
                       onPressed: () {
@@ -473,6 +479,58 @@ class _DonationDetailsPageState extends State<DonationDetailsPage> {
                       ),
                     ),
                   ),
+                  SizedBox(height: 20),
+                  DropdownButtonFormField<String>(
+                    value: selectedDriveId,
+                    hint: Text('Select Donation Drive'),
+                    items: donationDrives.map((drive) {
+                      return DropdownMenuItem<String>(
+                        value: drive.id,
+                        child: Text(drive['title']),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedDriveId = value;
+                      });
+                    },
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: _linkToDrive,
+                    child: Text('Link to Drive'),
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.teal,
+                        foregroundColor: Colors.white),
+                  ),
+                  if (widget.donData!['modeofDelivery'] == 'Drop-off')
+                    Column(
+                      children: [
+                        SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => QRView(
+                                  key: qrKey,
+                                  onQRViewCreated: (QRViewController controller) {
+                                    qrController = controller;
+                                    controller.scannedDataStream.listen((scanData) {
+                                      _processQRCode(scanData.code!);
+                                    });
+                                  },
+                                ),
+                              ),
+                            );
+                          },
+                          child: Text('Scan QR Code'),
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.teal,
+                              foregroundColor: Colors.white),
+                        ),
+                      ],
+                    ),
                 ],
               ),
             ),

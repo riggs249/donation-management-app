@@ -48,7 +48,7 @@ class _OrganizationHomePageState extends State<OrganizationHomePage> {
   Widget build(BuildContext context) {
     List<Widget> widgetOptions = [
       DonationListPage(),
-      DonationDrivesPage(),
+      AdminPage(),
       ProfilePage(orgData: orgData, docId: docId),
     ];
 

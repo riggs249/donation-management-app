@@ -24,8 +24,9 @@ class _DonatePageState extends State<DonatePage> {
   DateTime? start = DateTime.now();
   DateTime? end = DateTime(DateTime.now().year+2);
   String? _dropdownValue = 'Pick-up';
-  String? weight='';
-  String? address='';
+  String? weight;
+  String? address;
+  String? contactNo;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -119,6 +120,23 @@ class _DonatePageState extends State<DonatePage> {
                   } return null;
                 },
             ) : SizedBox(height: 0),
+            _dropdownValue == "Pick-up" ? TextFormField(
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: "Contact no.",
+                hintText: "Input contact no."
+              ),
+                onSaved: (value) {
+                  setState(() {
+                    contactNo = value;
+                  }); 
+                },
+                validator: (value) {
+                  if(value == null || value.isEmpty) {
+                    return "please enter contact no";
+                  } return null;
+                },
+            ) : SizedBox(height: 0),
             TextFormField(
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
@@ -164,7 +182,7 @@ class _DonatePageState extends State<DonatePage> {
                 if(_formKey.currentState!.validate()) {
                   _formKey.currentState!.save();
                 }
-                await context.read<UserAuthProvider>().authService.addDonation(widget.donorName!, widget.donorEmail!, widget.orgEmail!, address!, weight!, dateandTime!, "test contact no", foodCheckboxValue!, clothesCheckboxValue!, cashCheckboxValue!, necessitiesCheckboxValue!, _dropdownValue!);
+                await context.read<UserAuthProvider>().authService.addDonation(widget.donorName!, widget.donorEmail!, widget.orgEmail!, address!, weight!, dateandTime!, contactNo!, foodCheckboxValue!, clothesCheckboxValue!, cashCheckboxValue!, necessitiesCheckboxValue!, _dropdownValue!);
               },
               child: Text('Donate'),
             ),

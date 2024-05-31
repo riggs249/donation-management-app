@@ -18,7 +18,8 @@ class _DonationDetailsPageState extends State<DonationDetailsPage> {
   Map<String, dynamic>? userData;
   bool _isLoading = true;
   String selectedStatus = 'Pending';
-
+  String? selectedDriveId;
+  List<DocumentSnapshot> donationDrives = [];
   final List<String> _statusOptions = [
     'Pending',
     'Confirmed',
@@ -38,6 +39,8 @@ class _DonationDetailsPageState extends State<DonationDetailsPage> {
       });
     }
     selectedStatus = widget.donData!['status'];
+        // _loadDonationData();
+    _loadDonationDrives();
   }
 
   Future<void> _fetchUserData() async {
@@ -45,7 +48,7 @@ class _DonationDetailsPageState extends State<DonationDetailsPage> {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection("donors")
           .where('email', isEqualTo: widget.donData!['email'])
-          .limit(1) // Limit the results to 1
+          .limit(1)
           .get();
 
       setState(() {
@@ -54,7 +57,6 @@ class _DonationDetailsPageState extends State<DonationDetailsPage> {
             : null;
         _isLoading = false;
       });
-      print(userData);
     } catch (e) {
       print("Error fetching user data: $e");
       setState(() {
@@ -65,15 +67,51 @@ class _DonationDetailsPageState extends State<DonationDetailsPage> {
 
   Future<void> changeStatus(String docId, String status) async {
     try {
-      await FirebaseFirestore.instance
-          .collection('donations')
-          .doc(docId)
-          .update({
+      await FirebaseFirestore.instance.collection('donations').doc(docId).update({
         'status': status,
       });
     } catch (e) {
       print('Error: $e');
     }
+  }
+
+  
+
+  Future<void> _loadDonationDrives() async {
+    QuerySnapshot drivesSnapshot = await FirebaseFirestore.instance.collection('donation_drives').get();
+    setState(() {
+      donationDrives = drivesSnapshot.docs;
+    });
+  }
+
+  Future<void> _linkToDrive() async {
+    if (selectedDriveId != null) {
+      try {
+        await FirebaseFirestore.instance.collection('donation_drives').doc(selectedDriveId).update({
+          'linked_donations': FieldValue.arrayUnion([widget.docId]),
+        });
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Donation linked to drive successfully')));
+      } catch (e) {
+        print('Error linking donation to drive: $e');
+      }
+    }
+  }
+
+  List<String> _getCategories() {
+    List<String> categories = [];
+    if (widget.donData!['cash'] == true) {
+      categories.add('Cash');
+    }
+    if (widget.donData!['clothes'] == true) {
+      categories.add('Clothes');
+    }
+    if (widget.donData!['food'] == true) {
+      categories.add('Food');
+    }
+    if (widget.donData!['necessities'] == true) {
+      categories.add('Necessities');
+    }
+    return categories;
   }
 
   @override
@@ -88,16 +126,18 @@ class _DonationDetailsPageState extends State<DonationDetailsPage> {
       formattedTime = DateFormat.jm().format(donationDate);
     }
 
+    List<String> categories = _getCategories();
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Donation Details'),
         backgroundColor: Colors.teal,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: _isLoading
-            ? Center(child: CircularProgressIndicator())
-            : Column(
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
@@ -124,11 +164,6 @@ class _DonationDetailsPageState extends State<DonationDetailsPage> {
                               const Icon(Icons.person,
                                   color: Colors.teal, size: 26),
                               const SizedBox(width: 10),
-                              // const Text(
-                              //   "Donor: ",
-                              //   style: TextStyle(
-                              //       fontSize: 18, fontWeight: FontWeight.bold),
-                              // ),
                               Text(userData!['name'],
                                   style: const TextStyle(fontSize: 18))
                             ],
@@ -200,8 +235,10 @@ class _DonationDetailsPageState extends State<DonationDetailsPage> {
                                     fontWeight: FontWeight.bold,
                                     color: Colors.teal),
                               ),
-                              Text(widget.donData!['category'],
-                                  style: const TextStyle(fontSize: 18))
+                              Expanded(
+                                child: Text(categories.join(', '),
+                                    style: const TextStyle(fontSize: 18)),
+                              ),
                             ],
                           ),
                           const SizedBox(height: 5),
@@ -346,6 +383,29 @@ class _DonationDetailsPageState extends State<DonationDetailsPage> {
                     ),
                   ),
                   SizedBox(height: 20),
+
+                  DropdownButtonFormField<String>(
+                    value: selectedDriveId,
+                    hint: Text('Select Donation Drive'),
+                    items: donationDrives.map((drive) {
+                      return DropdownMenuItem<String>(
+                        value: drive.id,
+                        child: Text(drive['title']),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedDriveId = value;
+                      });
+                    },
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: _linkToDrive,
+                    child: Text('Link to Drive'),
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
+                  ),
+
                   Center(
                     child: ElevatedButton(
                       onPressed: () {
@@ -372,7 +432,7 @@ class _DonationDetailsPageState extends State<DonationDetailsPage> {
                   ),
                 ],
               ),
-      ),
+            ),
     );
   }
 }

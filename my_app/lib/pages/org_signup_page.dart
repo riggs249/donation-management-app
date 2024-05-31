@@ -12,6 +12,7 @@ class OrgSignUpPage extends StatefulWidget {
 class _SignUpState extends State<OrgSignUpPage> {
   final _formKey = GlobalKey<FormState>();
   String? organizationName;
+  String? description;
   String? email;
   String? password;
   String? address;
@@ -34,6 +35,7 @@ class _SignUpState extends State<OrgSignUpPage> {
               children: [
                 heading,
                 nameField,
+                descriptionField,
                 emailField,
                 passwordField,
                 addressField,
@@ -53,15 +55,23 @@ class _SignUpState extends State<OrgSignUpPage> {
         padding: EdgeInsets.only(bottom: 30),
         child: Text(
           "Sign Up as an Organization",
-          style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.teal), // Teal color for heading
         ),
       );
 
   Widget get nameField => Padding(
-        padding: const EdgeInsets.only(bottom: 30),
+        padding: const EdgeInsets.only(bottom: 20),
         child: TextFormField(
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
+          decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(50), // Custom border radius
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.teal), // Custom active color
+              borderRadius: BorderRadius.circular(50), // Custom border radius
+            ),
+            filled: true, // Set to true to fill the background color
+            fillColor: Colors.grey[200], // Background color of the input field
             labelText: "Organization Name",
             hintText: "Enter the organization name",
           ),
@@ -74,12 +84,46 @@ class _SignUpState extends State<OrgSignUpPage> {
           },
         ),
       );
+
+  Widget get descriptionField => Padding(
+        padding: const EdgeInsets.only(bottom: 20),
+        child: TextFormField(
+          decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(50), // Custom border radius
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.teal), // Custom active color
+              borderRadius: BorderRadius.circular(50), // Custom border radius
+            ),
+            filled: true, // Set to true to fill the background color
+            fillColor: Colors.grey[200], // Background color of the input field
+            labelText: "Description",
+            hintText: "Enter the organization description",
+          ),
+          onSaved: (value) => description = value,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return "Please enter the organization description";
+            }
+            return null;
+          },
+        ),
+      );
   
   Widget get emailField => Padding(
-        padding: const EdgeInsets.only(bottom: 30),
+        padding: const EdgeInsets.only(bottom: 20),
         child: TextFormField(
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
+          decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(50), // Custom border radius
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.teal), // Custom active color
+              borderRadius: BorderRadius.circular(50), // Custom border radius
+            ),
+            filled: true, // Set to true to fill the background color
+            fillColor: Colors.grey[200], // Background color of the input field
             labelText: "Email",
             hintText: "Enter an email",
           ),
@@ -94,10 +138,18 @@ class _SignUpState extends State<OrgSignUpPage> {
       );
 
   Widget get passwordField => Padding(
-        padding: const EdgeInsets.only(bottom: 30),
+        padding: const EdgeInsets.only(bottom: 20),
         child: TextFormField(
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
+          decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(50), // Custom border radius
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.teal), // Custom active color
+              borderRadius: BorderRadius.circular(50), // Custom border radius
+            ),
+            filled: true, // Set to true to fill the background color
+            fillColor: Colors.grey[200], // Background color of the input field
             labelText: "Password",
             hintText: "At least 6 characters",
           ),
@@ -113,10 +165,18 @@ class _SignUpState extends State<OrgSignUpPage> {
       );
 
   Widget get addressField => Padding(
-        padding: const EdgeInsets.only(bottom: 30),
+        padding: const EdgeInsets.only(bottom: 20),
         child: TextFormField(
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
+          decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(50), // Custom border radius
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.teal), // Custom active color
+              borderRadius: BorderRadius.circular(50), // Custom border radius
+            ),
+            filled: true, // Set to true to fill the background color
+            fillColor: Colors.grey[200], // Background color of the input field
             labelText: "Address",
             hintText: "Enter your address",
           ),
@@ -133,8 +193,16 @@ class _SignUpState extends State<OrgSignUpPage> {
   Widget get contactNoField => Padding(
         padding: const EdgeInsets.only(bottom: 30),
         child: TextFormField(
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
+          decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(50), // Custom border radius
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.teal), // Custom active color
+              borderRadius: BorderRadius.circular(50), // Custom border radius
+            ),
+            filled: true, // Set to true to fill the background color
+            fillColor: Colors.grey[200], // Background color of the input field
             labelText: "Contact No",
             hintText: "Enter your contact number",
           ),
@@ -176,7 +244,7 @@ class _SignUpState extends State<OrgSignUpPage> {
               String? result = await context
                   .read<UserAuthProvider>()
                   .authService
-                  .signUpOrganization(organizationName!, email!, password!, address!, contactNo!);
+                  .signUpOrganization(organizationName!, description!, email!, password!, address!, contactNo!);
               if (mounted) {
                 Navigator.pop(context);
               } else {
@@ -195,7 +263,20 @@ class _SignUpState extends State<OrgSignUpPage> {
             }
           }
         },
-        child: const Text("Sign Up"),
+        child: Text(
+          'Sign Up',
+          style: TextStyle(
+            color: Colors.white, // Font color of the button text
+          ),
+        ),
+        style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.teal, // Custom button color
+            padding: const EdgeInsets.symmetric(vertical: 15), // Custom padding
+            minimumSize: Size(100, 0), // Minimum button width
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(50), // Custom border radius
+            ),
+          ),
       );
 
   Widget get signUpErrorMessage {

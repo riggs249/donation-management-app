@@ -48,7 +48,6 @@ class _OrganizationHomePageState extends State<OrganizationHomePage> {
   Widget build(BuildContext context) {
     List<Widget> widgetOptions = [
       DonationListPage(),
-      AdminPage(),
       DonationDrivesPage(orgEmail: orgData?['email'] ?? ''),
       ProfilePage(orgData: orgData, docId: docId),
     ];
@@ -67,14 +66,6 @@ class _OrganizationHomePageState extends State<OrganizationHomePage> {
         ),
         backgroundColor: Colors.teal,
         elevation: 4.0,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.notifications),
-            onPressed: () {
-              // Add notification logic here
-            },
-          ),
-        ],
       ),
       body: widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
@@ -84,8 +75,8 @@ class _OrganizationHomePageState extends State<OrganizationHomePage> {
             label: 'Donations',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.admin_panel_settings),
-            label: 'Admin',
+            icon: Icon(Icons.drive_folder_upload_rounded),
+            label: 'Donation Drives',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
@@ -322,11 +313,13 @@ class _ProfilePageState extends State<ProfilePage> {
                     children: [
                       const Icon(Icons.business, color: Colors.teal, size: 30),
                       const SizedBox(width: 10),
-                      Text(
-                        widget.orgData!['organizationName'] ?? 'No Name',
-                        style: const TextStyle(
-                            fontSize: 22, fontWeight: FontWeight.bold),
-                      ),
+                      Flexible(
+                        child: Text(
+                          widget.orgData!['organizationName'] ?? 'No Name',
+                          style: const TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                      )
                     ],
                   ),
                   SizedBox(height: 10),

@@ -1,9 +1,13 @@
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:provider/provider.dart';
 import 'signin_page.dart';
 import '../providers/auth_provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:screenshot/screenshot.dart';
 
 class DonatePage extends StatefulWidget {
   final String? donorName;
@@ -28,6 +32,8 @@ class _DonatePageState extends State<DonatePage> {
   String? weight;
   String? address;
   String? contactNo;
+  Uint8List? imageFile;
+  ScreenshotController screenshotController = ScreenshotController(); 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -138,11 +144,11 @@ class _DonatePageState extends State<DonatePage> {
                     } return null;
                   },
               ) : SizedBox(height: 0),
-              _dropdownValue == "Drop-off" ? QrImageView(
+              _dropdownValue == "Drop-off" ? Screenshot(controller: screenshotController, child: QrImageView(
                 data: '${widget.donorEmail}${widget.orgEmail}',
                 version: QrVersions.auto,
                 size: 200.0
-              ) : SizedBox(height: 0),
+              )) : SizedBox(height: 0),
               TextFormField(
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
@@ -191,6 +197,15 @@ class _DonatePageState extends State<DonatePage> {
                   }
                   await context.read<UserAuthProvider>().authService.addDonation(widget.donorName!, widget.donorEmail!, widget.orgEmail!, address!, weight!, dateandTime!, contactNo!, foodCheckboxValue!, clothesCheckboxValue!, cashCheckboxValue!, necessitiesCheckboxValue!, _dropdownValue!);
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text("Donation sent!")));
+                  screenshotController.capture().then((Uint8List? image) {
+                      //Capture Done
+                      setState(() {
+                          imageFile = image;
+                      });
+                  }).catchError((onError) {
+                      print(onError);
+                  });
+                  await ImageGallerySaver.saveImage(imageFile!);
                 },
                 child: Text('Donate'),
               ),

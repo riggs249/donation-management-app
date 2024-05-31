@@ -187,8 +187,10 @@ class _DonatePageState extends State<DonatePage> {
                 onPressed: () async {
                   if(_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
+
                   }
                   await context.read<UserAuthProvider>().authService.addDonation(widget.donorName!, widget.donorEmail!, widget.orgEmail!, address!, weight!, dateandTime!, contactNo!, foodCheckboxValue!, clothesCheckboxValue!, cashCheckboxValue!, necessitiesCheckboxValue!, _dropdownValue!);
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text("Donation sent!")));
                 },
                 child: Text('Donate'),
               ),

@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'signin_page.dart';
 import '../providers/auth_provider.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class DonatePage extends StatefulWidget {
   final String? donorName;
@@ -23,9 +25,9 @@ class _DonatePageState extends State<DonatePage> {
   DateTime? start = DateTime.now();
   DateTime? end = DateTime(DateTime.now().year+2);
   String? _dropdownValue = 'Pick-up';
-  String? weight='';
-  String? address='';
-  String? contactNo='';
+  String? weight;
+  String? address;
+  String? contactNo;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,153 +47,158 @@ class _DonatePageState extends State<DonatePage> {
           ),
         ],
       ),
-      body: Padding(
+      body: SingleChildScrollView(child: Padding(
         padding: const EdgeInsets.all(16.0),
 
         child: Form(
           key: _formKey,
-          child:Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            
-            Text(
-              'Details:',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            // Widget to display organizations
-            CheckboxListTile(
-                title: const Text("Food"),
-                value: foodCheckboxValue,
-                onChanged: (bool? value) {
-                  setState(() {
-                    foodCheckboxValue = value;
-                  });
-                }),
-            CheckboxListTile(
-                title: const Text("Clothes"),
-                value: clothesCheckboxValue,
-                onChanged: (bool? value) {
-                  setState(() {
-                    clothesCheckboxValue = value;
-                  });
-                }),
-            CheckboxListTile(
-                title: const Text("Cash"),
-                value: cashCheckboxValue,
-                onChanged: (bool? value) {
-                  setState(() {
-                    cashCheckboxValue = value;
-                  });
-                }),
-            CheckboxListTile(
-                title: const Text("Necessities"),
-                value: necessitiesCheckboxValue,
-                onChanged: (bool? value) {
-                  setState(() {
-                    necessitiesCheckboxValue = value;
-                  });
-                }), 
-            DropdownButton(
-                items: const [
-                  DropdownMenuItem(child: Text("Pick-up"), value: "Pick-up"),
-                  DropdownMenuItem(child: Text("Drop-off"), value: "Drop-off"),
-                ],
-                value: _dropdownValue,
-                onChanged: (String? value) {
-                  setState(() {
-                    _dropdownValue = value;
-                  });
-                }),
-            _dropdownValue == "Pick-up" ? TextFormField(
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: "Pick-up address",
-                hintText: "Input address"
-              ),
-                onSaved: (value) {
-                  setState(() {
-                    address = value;
-                  }); 
-                },
-                validator: (value) {
-                  if(value == null || value.isEmpty) {
-                    return "please enter address";
-                  } return null;
-                },
-            ) : SizedBox(height: 0),
-            _dropdownValue == "Pick-up" ? TextFormField(
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: "Contact no.",
-                hintText: "Input contact no."
-              ),
-                onSaved: (value) {
-                  setState(() {
-                    contactNo = value;
-                  }); 
-                },
-                validator: (value) {
-                  if(value == null || value.isEmpty) {
-                    return "please enter contact no";
-                  } return null;
-                },
-            ) : SizedBox(height: 0),
-            TextFormField(
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: "Date",
-                filled: true,
-                prefixIcon: Icon(Icons.calendar_month_outlined),
-                enabledBorder: OutlineInputBorder()
-              ),
-              readOnly: true,
-              onTap: () {
-                
-                showDateTimePicker(context: context).then((result) {
-                  setState(() {
-                    dateandTime = result;
-                  });
-                });
-              },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
               
-            ),
-            SizedBox(height: 20),
-            TextFormField(
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: "Weight",
-                hintText: "Input weight"
+              Text(
+                'Details:',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
-              onSaved: (value) {
-                setState(() {
-                  weight = value;
-                });
-                weight=value;
-              },
-              validator: (value) {
-                  if(value == null || value.isEmpty) {
-                    return "please enter address";
-                  } return null;
+              // Widget to display organizations
+              CheckboxListTile(
+                  title: const Text("Food"),
+                  value: foodCheckboxValue,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      foodCheckboxValue = value;
+                    });
+                  }),
+              CheckboxListTile(
+                  title: const Text("Clothes"),
+                  value: clothesCheckboxValue,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      clothesCheckboxValue = value;
+                    });
+                  }),
+              CheckboxListTile(
+                  title: const Text("Cash"),
+                  value: cashCheckboxValue,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      cashCheckboxValue = value;
+                    });
+                  }),
+              CheckboxListTile(
+                  title: const Text("Necessities"),
+                  value: necessitiesCheckboxValue,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      necessitiesCheckboxValue = value;
+                    });
+                  }), 
+              DropdownButton(
+                  items: const [
+                    DropdownMenuItem(child: Text("Pick-up"), value: "Pick-up"),
+                    DropdownMenuItem(child: Text("Drop-off"), value: "Drop-off"),
+                  ],
+                  value: _dropdownValue,
+                  onChanged: (String? value) {
+                    setState(() {
+                      _dropdownValue = value;
+                    });
+                  }),
+              _dropdownValue == "Pick-up" ? TextFormField(
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Pick-up address",
+                  hintText: "Input address"
+                ),
+                  onSaved: (value) {
+                    setState(() {
+                      address = value;
+                    }); 
+                  },
+                  validator: (value) {
+                    if(value == null || value.isEmpty) {
+                      return "please enter address";
+                    } return null;
+                  },
+              ) : SizedBox(height: 0),
+              _dropdownValue == "Pick-up" ? TextFormField(
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Contact no.",
+                  hintText: "Input contact no."
+                ),
+                  onSaved: (value) {
+                    setState(() {
+                      contactNo = value;
+                    }); 
+                  },
+                  validator: (value) {
+                    if(value == null || value.isEmpty) {
+                      return "please enter contact no";
+                    } return null;
+                  },
+              ) : SizedBox(height: 0),
+              _dropdownValue == "Drop-off" ? QrImageView(
+                data: '${widget.donorEmail}${widget.orgEmail}',
+                version: QrVersions.auto,
+                size: 200.0
+              ) : SizedBox(height: 0),
+              TextFormField(
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Date",
+                  filled: true,
+                  prefixIcon: Icon(Icons.calendar_month_outlined),
+                  enabledBorder: OutlineInputBorder()
+                ),
+                readOnly: true,
+                onTap: () {
+                  
+                  showDateTimePicker(context: context).then((result) {
+                    setState(() {
+                      dateandTime = result;
+                    });
+                  });
                 },
-            ),
-            SizedBox(height: 20),
-            //Input
-            ElevatedButton(
-              onPressed: () async {
-                if(_formKey.currentState!.validate()) {
-                  _formKey.currentState!.save();
-                }
-                await context.read<UserAuthProvider>().authService.addDonation(widget.donorName!, widget.donorEmail!, widget.orgEmail!, address!, weight!, dateandTime!, contactNo!, foodCheckboxValue!, clothesCheckboxValue!, cashCheckboxValue!, necessitiesCheckboxValue!, _dropdownValue!);
-              },
-              child: Text('Donate'),
-            ),
+                
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Weight",
+                  hintText: "Input weight"
+                ),
+                onSaved: (value) {
+                  setState(() {
+                    weight = value;
+                  });
+                  weight=value;
+                },
+                validator: (value) {
+                    if(value == null || value.isEmpty) {
+                      return "please enter address";
+                    } return null;
+                  },
+              ),
+              SizedBox(height: 20),
+              //Input
+              ElevatedButton(
+                onPressed: () async {
+                  if(_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+                  }
+                  await context.read<UserAuthProvider>().authService.addDonation(widget.donorName!, widget.donorEmail!, widget.orgEmail!, address!, weight!, dateandTime!, contactNo!, foodCheckboxValue!, clothesCheckboxValue!, cashCheckboxValue!, necessitiesCheckboxValue!, _dropdownValue!);
+                },
+                child: Text('Donate'),
+              ),
 
-            // Widget to display donors
-          ],
+              // Widget to display donors
+            ],
 
-        ),
+          ),
       ),
-    ));
+    )));
   }
 
   Future<DateTime?> showDateTimePicker({

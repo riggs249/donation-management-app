@@ -248,6 +248,9 @@ class DonorTile extends StatelessWidget {
               title: Text('Address: ${data['address']}'),
             ),
             ListTile(
+              title: Text('Work Address: ${data['workAddress'] ?? ''}'),
+            ),
+            ListTile(
               title: Text('Contact Number: ${data['contactNo']}'),
             ),
           ],

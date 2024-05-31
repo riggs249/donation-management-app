@@ -1,26 +1,43 @@
 {
   "project_info": {
-    "project_number": "776662480421",
-    "project_id": "cmsc23-546fb",
-    "storage_bucket": "cmsc23-546fb.appspot.com"
+    "project_number": "445090607092",
+    "project_id": "cmsc23-project-3bdb7",
+    "storage_bucket": "cmsc23-project-3bdb7.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:776662480421:android:e05e4a353efd556cab71cc",
+        "mobilesdk_app_id": "1:445090607092:android:b1c54796f12480a8bb13a1",
         "android_client_info": {
           "package_name": "com.example.week9_authentication"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "445090607092-p0dpqasi3np2f4r71ac9orti2pee4uhc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyANP-gDABz5iMFwzK6C0Z9tup_8eZsLANs"
+          "current_key": "AIzaSyD2UA21ZwHcIj8Ffwhg6smhDSiBJFtitgE"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "445090607092-p0dpqasi3np2f4r71ac9orti2pee4uhc.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "445090607092-feaia7653bsop4ea2ngd5n2iaq4dan4o.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.week9Authentication"
+              }
+            }
+          ]
         }
       }
     }

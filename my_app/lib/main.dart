@@ -8,6 +8,7 @@ import 'providers/auth_provider.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
+    name: 'anything',
     options: DefaultFirebaseOptions.currentPlatform,
   );
 

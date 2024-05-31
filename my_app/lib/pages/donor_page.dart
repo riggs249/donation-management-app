@@ -50,7 +50,7 @@ class _DonorPageState extends State<DonorPage> {
             icon: Icon(Icons.person),
             onPressed: () async {
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => DonationListPage()));
+                  MaterialPageRoute(builder: (context) => DonationListPage(donorData?['name'],donorData?['email'],donorData?['contactNo'],donorData?['address'])));
             },
           ),
           IconButton(
@@ -139,7 +139,11 @@ Future<String?> _getCurrentUserEmail() async {
 }
 
 class DonationListPage extends StatelessWidget {
-  const DonationListPage({super.key});
+  DonationListPage(this.donorName, this.donorEmail, this.donorContactNo,this.donorAddress);
+  String? donorName;
+  String? donorEmail;
+  String? donorContactNo;
+  String? donorAddress;
 
   Future<String?> _getCurrentUserEmail() async {
     User? user = FirebaseAuth.instance.currentUser;
@@ -150,7 +154,7 @@ class DonationListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Donations"),
+        title: Text("Profile"),
         
       ),
       body: FutureBuilder<String?>(
@@ -196,15 +200,39 @@ class DonationListPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Text(
+                      "Name: ${donorName}",
+                      style: TextStyle(
+                        fontSize: 20,
+                      )
+                    ),
+                    Text(
+                      "Email: ${donorEmail}",
+                      style: TextStyle(
+                        fontSize: 20,
+                      )
+                    ),
+                    Text(
+                      "Contact No: ${donorContactNo}",
+                      style: TextStyle(
+                        fontSize: 20,
+                      )
+                    ),
+                    Text(
+                      "Address: ${donorAddress}",
+                      style: TextStyle(
+                        fontSize: 20,
+                      )
+                    ),
+                    const SizedBox(height: 20),
                     const Text(
-                      'List of Donations',
+                      'Donations',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
                       ),
                     ),
-                    const SizedBox(height: 10),
                     Expanded(
                       child: ListView.builder(
                         itemCount: snapshot.data?.docs.length,

@@ -67,6 +67,27 @@ class FirebaseAuthApi {
     }
   }
 
+  Future<String?> createAdminAccount(String email, String password) async {
+    try {
+      UserCredential userCredential = await auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      String uid = userCredential.user!.uid;
+
+      await firestore.collection('admins').doc(uid).set({
+        'email': email, 
+      });
+
+      return null;
+    } on FirebaseAuthException catch (e) {
+      return e.code;
+    } catch (e) {
+      return 'Error: $e';
+    }
+  }
+
   Future<String?> addDonation(String name, String email, String orgEmail, String address, String weight, DateTime dateandTime, String contactNo, bool food, bool clothes, bool cash, bool necessities, String pickupOrDropoff) async {
     try {
       await firestore.collection('donations')
@@ -86,7 +107,7 @@ class FirebaseAuthApi {
         'modeofDelivery': pickupOrDropoff,
         'status': "Pending"
       });
-      return "succes";
+      return "success";
     } on FirebaseException catch (e) {
       return "failed";
     }
@@ -112,7 +133,12 @@ class FirebaseAuthApi {
         }
       }
 
-      return "Success";
+      DocumentSnapshot adminDoc = await firestore.collection('admins').doc(uid).get();
+      if (adminDoc.exists) {
+        return "admin";
+      }
+
+      return null;
     } on FirebaseAuthException catch(e) {
       return e.code;
     } catch(e) {

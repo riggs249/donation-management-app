@@ -194,7 +194,7 @@ class _SignInPageState extends State<SignInPage> {
                       MaterialPageRoute(builder: (context) => OrganizationHomePage()),
                     );
                   },
-                  child: const Text('OK'),
+                  child: const Text('OK', style: TextStyle(color: Colors.teal)),
                 ),
               ],
               shape: RoundedRectangleBorder(
@@ -220,7 +220,7 @@ class _SignInPageState extends State<SignInPage> {
                       MaterialPageRoute(builder: (context) => AdminPage()),
                     );
                   },
-                  child: const Text('OK'),
+                  child: const Text('OK', style: TextStyle(color: Colors.teal)),
                 ),
               ],
               shape: RoundedRectangleBorder(

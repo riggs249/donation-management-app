@@ -40,7 +40,7 @@ class FirebaseAuthApi {
     }
   }
 
-  Future<String?> signUpOrganization(String organizationName, String description, String email, String password, String address, String contactNo) async {
+  Future<String?> signUpOrganization(String organizationName, String description, String email, String password, String address, String contactNo, String proofOfLegitimacy) async {
     try {
       UserCredential userCredential = await auth.createUserWithEmailAndPassword(
         email: email,
@@ -57,6 +57,7 @@ class FirebaseAuthApi {
         'contactNo': contactNo,
         'isApproved': false,
         'isOpen': false,
+        'proofOfLegitimacy': proofOfLegitimacy,
       });
 
       return null;

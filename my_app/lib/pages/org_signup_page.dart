@@ -1,5 +1,10 @@
+import 'dart:io';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import '../providers/auth_provider.dart';
 
 class OrgSignUpPage extends StatefulWidget {
@@ -20,6 +25,58 @@ class _SignUpState extends State<OrgSignUpPage> {
   String? proofOfLegitimacy;
   String? errorMessage;
   bool isLoading = false;
+  File? _proofImage;
+
+  Future<void> _choosePhotoProof() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      File imageFile = File(pickedFile.path);
+      setState(() {
+        _proofImage = imageFile;
+      });
+
+      // Upload image to Firebase Storage
+      try {
+        final storageRef = FirebaseStorage.instance
+            .ref()
+            .child('photo_proofs/${DateTime.now().millisecondsSinceEpoch}.jpg');
+        final uploadTask = storageRef.putFile(imageFile);
+        final snapshot = await uploadTask.whenComplete(() {});
+        final imageUrl = await snapshot.ref.getDownloadURL();
+
+        setState(() {
+          proofOfLegitimacy = imageUrl;
+        });
+      } catch (e) {
+        print('Error uploading image: $e');
+      }
+    }
+  }
+
+  void _showPhotoProofDialog(String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Image.network(imageUrl),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Close', style: TextStyle(color: Colors.teal)),
+            ),
+          ],
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          backgroundColor: Colors.white,
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +98,16 @@ class _SignUpState extends State<OrgSignUpPage> {
                 addressField,
                 contactNoField,
                 proofField,
+                if (proofOfLegitimacy != null)
+                  InkWell(
+                    onTap: () => _showPhotoProofDialog(proofOfLegitimacy!),
+                    child: Text(
+                      'View Photo Proof',
+                      style: TextStyle(
+                        color: Colors.teal,
+                      ),
+                    ),
+                  ),
                 errorMessage != null ? signUpErrorMessage : Container(),
                 isLoading ? const CircularProgressIndicator() : submitButton,
               ],
@@ -110,7 +177,7 @@ class _SignUpState extends State<OrgSignUpPage> {
           },
         ),
       );
-  
+
   Widget get emailField => Padding(
         padding: const EdgeInsets.only(bottom: 20),
         child: TextFormField(
@@ -217,96 +284,91 @@ class _SignUpState extends State<OrgSignUpPage> {
       );
 
   Widget get proofField => Padding(
-        padding: const EdgeInsets.only(bottom: 30),
+        padding: const EdgeInsets.only(bottom: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ElevatedButton(
-              onPressed: () async {},
+              onPressed: _choosePhotoProof,
               child: Text(
-                'Choose Photo Proof',
+                'Choose Photo Proof (Required)',
                 style: TextStyle(
                   color: Colors.white, // Font color of the button text
                 ),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black, // Custom button color
-                padding: const EdgeInsets.symmetric(vertical: 20), // Custom padding
-                minimumSize: Size(350, 0), // Minimum button width
+                backgroundColor: Colors.black, // Button color
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(50), // Custom border radius
                 ),
+                padding: const EdgeInsets.symmetric(vertical: 20), // Custom padding
+                minimumSize: Size(350, 0), // Minimum button width
               ),
             ),
           ],
         ),
       );
 
-  Widget get submitButton => ElevatedButton(
-        onPressed: () async {
-          if (_formKey.currentState!.validate()) {
-            _formKey.currentState!.save();
+  Widget get submitButton => Padding(
+  padding: const EdgeInsets.symmetric(vertical: 20.0), // Adjust the padding as needed
+  child: ElevatedButton(
+    onPressed: () async {
+      if (_formKey.currentState!.validate()) {
+        _formKey.currentState!.save();
+        setState(() {
+          isLoading = true;
+        });
+        try {
+          String? result = await context
+              .read<UserAuthProvider>()
+              .authService
+              .signUpOrganization(
+                organizationName!,
+                description!,
+                email!,
+                password!,
+                address!,
+                contactNo!,
+                proofOfLegitimacy!,
+              );
+          if (mounted) {
+            Navigator.pop(context);
+          } else {
             setState(() {
-              isLoading = true;
+              errorMessage = result;
             });
-            try {
-              String? result = await context
-                  .read<UserAuthProvider>()
-                  .authService
-                  .signUpOrganization(organizationName!, description!, email!, password!, address!, contactNo!);
-              if (mounted) {
-                Navigator.pop(context);
-              } else {
-                setState(() {
-                  errorMessage = result;
-                });
-              }
-            } catch (e) {
-              setState(() {
-                errorMessage = 'An unexpected error occurred';
-              });
-            } finally {
-              setState(() {
-                isLoading = false;
-              });
-            }
           }
-        },
-        child: Text(
-          'Sign Up',
-          style: TextStyle(
-            color: Colors.white, // Font color of the button text
-          ),
-        ),
-        style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.teal, // Custom button color
-            padding: const EdgeInsets.symmetric(vertical: 15), // Custom padding
-            minimumSize: Size(100, 0), // Minimum button width
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(50), // Custom border radius
-            ),
-          ),
-      );
-
-  Widget get signUpErrorMessage {
-    String message = errorMessage ?? "An error occurred";
-    switch (errorMessage) {
-      case 'invalid-email':
-        message = 'Invalid email format!';
-        break;
-      case 'weak-password':
-        message = 'Weak password, try a stronger one!';
-        break;
-      case 'email-already-in-use':
-        message = 'Email already in use, please use a different email!';
-        break;
-    }
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 30),
-      child: Text(
-        message,
-        style: const TextStyle(color: Colors.red),
+        } catch (e) {
+          setState(() {
+            errorMessage = 'An unexpected error occurred';
+          });
+        } finally {
+          setState(() {
+            isLoading = false;
+          });
+        }
+      }
+    },
+    child: Text(
+      'Sign Up',
+      style: TextStyle(
+        color: Colors.white, // Font color of the button text
       ),
-    );
-  }
+    ),
+    style: ElevatedButton.styleFrom(
+      backgroundColor: Colors.teal, // Custom button color
+      padding: const EdgeInsets.symmetric(vertical: 15), // Custom padding
+      minimumSize: Size(100, 0), // Minimum button width
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(50), // Custom border radius
+        ),
+      ),
+    ),
+  );
+
+
+  Widget get signUpErrorMessage => Text(
+        errorMessage ?? "",
+        style: const TextStyle(color: Colors.red),
+      );
 }

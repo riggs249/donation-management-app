@@ -157,7 +157,7 @@ class _SignInPageState extends State<SignInPage> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: const Text('Login Successful', style: TextStyle(color: Colors.teal)),
+              title: const Text('Login Successful', style: TextStyle(color: Colors.black)),
               content: const Text('You have successfully logged in as a donor.', style: TextStyle(color: Colors.teal)),
               actions: <Widget>[
                 TextButton(
@@ -168,7 +168,7 @@ class _SignInPageState extends State<SignInPage> {
                       MaterialPageRoute(builder: (context) => DonorPage()),
                     );
                   },
-                  child: const Text('OK', style: TextStyle(color: Colors.teal)),
+                  child: const Text('OK', style: TextStyle(color: Colors.black)),
                 ),
               ],
               shape: RoundedRectangleBorder(
@@ -183,7 +183,7 @@ class _SignInPageState extends State<SignInPage> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: const Text('Login Successful', style: TextStyle(color: Colors.teal)),
+              title: const Text('Login Successful', style: TextStyle(color: Colors.black)),
               content: const Text('You have successfully logged in as an organization.', style: TextStyle(color: Colors.teal)),
               actions: <Widget>[
                 TextButton(
@@ -194,7 +194,7 @@ class _SignInPageState extends State<SignInPage> {
                       MaterialPageRoute(builder: (context) => OrganizationHomePage()),
                     );
                   },
-                  child: const Text('OK', style: TextStyle(color: Colors.teal)),
+                  child: const Text('OK', style: TextStyle(color: Colors.black)),
                 ),
               ],
               shape: RoundedRectangleBorder(
@@ -209,7 +209,7 @@ class _SignInPageState extends State<SignInPage> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: const Text('Login Successful', style: TextStyle(color: Colors.teal)),
+              title: const Text('Login Successful', style: TextStyle(color: Colors.black)),
               content: const Text('You have successfully logged in as an administrator.', style: TextStyle(color: Colors.teal)),
               actions: <Widget>[
                 TextButton(
@@ -220,7 +220,7 @@ class _SignInPageState extends State<SignInPage> {
                       MaterialPageRoute(builder: (context) => AdminPage()),
                     );
                   },
-                  child: const Text('OK', style: TextStyle(color: Colors.teal)),
+                  child: const Text('OK', style: TextStyle(color: Colors.black)),
                 ),
               ],
               shape: RoundedRectangleBorder(

@@ -48,7 +48,7 @@ class _OrganizationHomePageState extends State<OrganizationHomePage> {
   Widget build(BuildContext context) {
     List<Widget> widgetOptions = [
       DonationListPage(),
-      DonationDrivesPage(),
+      DonationDrivesPage(orgEmail: orgData?['email'] ?? ''),
       ProfilePage(orgData: orgData, docId: docId),
     ];
 
@@ -59,8 +59,8 @@ class _OrganizationHomePageState extends State<OrganizationHomePage> {
           children: [
             const Text('Welcome back,'),
             Text(
-              '${orgData?['organizationName']} ',
-              style: TextStyle(fontSize: 14, color: Colors.white),
+              '${orgData?['organizationName'] ?? ''} ',
+              style: const TextStyle(fontSize: 14, color: Colors.white),
             ),
           ],
         ),
@@ -394,8 +394,8 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
           ),
-          SizedBox(height: 20),
-          Text(
+          const SizedBox(height: 20),
+          const Text(
             'About the Organization',
             style: TextStyle(
               fontSize: 25,
@@ -403,7 +403,7 @@ class _ProfilePageState extends State<ProfilePage> {
               color: Colors.teal,
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Card(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15),
@@ -416,7 +416,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${widget.orgData!['about'] ?? 'No description for this organization.'}',
+                    '${widget.orgData!['description'] ?? 'No description for this organization.'}',
                     style: TextStyle(fontSize: 16),
                   ),
                 ],

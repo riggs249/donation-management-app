@@ -16,6 +16,7 @@ class _SignUpState extends State<DefSignUpPage> {
   String? email;
   String? password;
   String? address;
+  String? workAddress;
   String? contactNo;
   String? errorMessage;
   bool isLoading = false;
@@ -37,6 +38,7 @@ class _SignUpState extends State<DefSignUpPage> {
                 emailField,
                 passwordField,
                 addressField,
+                workdAddressField,
                 contactNoField,
                 errorMessage != null ? signUpErrorMessage : Container(),
                 isLoading ? const CircularProgressIndicator() : submitButton,
@@ -162,6 +164,26 @@ class _SignUpState extends State<DefSignUpPage> {
         ),
       );
 
+  Widget get workdAddressField => Padding(
+        padding: const EdgeInsets.only(bottom: 20),
+        child: TextFormField(
+          decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(50), // Custom border radius
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.teal), // Custom active color
+              borderRadius: BorderRadius.circular(50), // Custom border radius
+            ),
+            filled: true, // Set to true to fill the background color
+            fillColor: Colors.grey[50], // Background color of the input field
+            labelText: "Work Address",
+            hintText: "Enter your work address",
+          ),
+          onSaved: (value) => setState(() => workAddress = value),
+        ),
+      );
+
   Widget get contactNoField => Padding(
         padding: const EdgeInsets.only(bottom: 30),
         child: TextFormField(
@@ -199,7 +221,7 @@ class _SignUpState extends State<DefSignUpPage> {
               String? result = await context
                   .read<UserAuthProvider>()
                   .authService
-                  .signUpDonor(name!, email!, password!, address!, contactNo!);
+                  .signUpDonor(name!, email!, password!, address!, workAddress!, contactNo!);
               if (mounted) {
                 Navigator.pop(context);
               } else {

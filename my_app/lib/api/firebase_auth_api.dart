@@ -18,7 +18,7 @@ class FirebaseAuthApi {
     return auth.currentUser;
   }
 
-  Future<String?> signUpDonor(String name, String email, String password, String address, String contactNo) async {
+  Future<String?> signUpDonor(String name, String email, String password, String address, String workAddress, String contactNo) async {
     try {
       UserCredential userCredential = await auth.createUserWithEmailAndPassword(
         email: email,
@@ -29,6 +29,7 @@ class FirebaseAuthApi {
         'name': name,
         'email': email,
         'address': address,
+        'workAddress': workAddress,
         'contactNo': contactNo,
       });
 
@@ -40,7 +41,7 @@ class FirebaseAuthApi {
     }
   }
 
-  Future<String?> signUpOrganization(String organizationName, String description, String email, String password, String address, String contactNo) async {
+  Future<String?> signUpOrganization(String organizationName, String description, String email, String password, String address, String contactNo, String proofOfLegitimacy) async {
     try {
       UserCredential userCredential = await auth.createUserWithEmailAndPassword(
         email: email,
@@ -57,6 +58,7 @@ class FirebaseAuthApi {
         'contactNo': contactNo,
         'isApproved': false,
         'isOpen': false,
+        'proofOfLegitimacy': proofOfLegitimacy,
       });
 
       return null;

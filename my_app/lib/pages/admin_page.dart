@@ -19,7 +19,7 @@ class AdminPage extends StatelessWidget {
               fontWeight: FontWeight.bold
             ),
           ),
-          backgroundColor: Colors.teal,
+          backgroundColor: Colors.teal.shade700,
           actions: [
             IconButton(
               icon: Icon(Icons.logout, color: Colors.white),
@@ -36,7 +36,7 @@ class AdminPage extends StatelessWidget {
           bottom: TabBar(
             indicatorColor: Colors.white,
             labelColor: Colors.white,
-            unselectedLabelColor: Colors.teal.shade100,
+            unselectedLabelColor: Colors.teal.shade200,
             tabs: [
               Tab(text: 'Organizations'),
               Tab(text: 'Donors'),
@@ -98,6 +98,7 @@ class OrganizationTile extends StatelessWidget {
     required this.isApproved,
   });
 
+  @override
   Widget build(BuildContext context) {
     return Card(
       margin: EdgeInsets.symmetric(vertical: 6),
@@ -108,7 +109,7 @@ class OrganizationTile extends StatelessWidget {
       child: Theme(
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent), // Set divider color to transparent
         child: ExpansionTile(
-          title: Text(data['organizationName'], style: TextStyle(color: Colors.teal)),
+          title: Text(data['organizationName'], style: TextStyle(color: Colors.teal, fontWeight: FontWeight.bold)),
           subtitle: Text('Status: ${isApproved ? 'Approved' : 'Pending'}'),
           children: [
             ListTile(
@@ -123,20 +124,34 @@ class OrganizationTile extends StatelessWidget {
             ListTile(
               title: Text('Contact Number: ${data['contactNo']}'),
             ),
-            if (!isApproved)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
-                onPressed: () {
-                  approveOrganization(docId);
-                },
-                child: const Text(
-                  'Approve',
-                  style: TextStyle(color: Colors.white), // Text color
+            ListTile(
+              title: Padding(
+                padding: EdgeInsets.symmetric(vertical: 0),
+                child: TextButton(
+                  onPressed: () {
+                    _showProofDialog(context, data['proofOfLegitimacy']);
+                  },
+                  child: Text(
+                    'View Proof',
+                    style: TextStyle(color: Colors.teal), // Text color
+                  ),
                 ),
               ),
             ),
+            if (!isApproved)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
+                  onPressed: () {
+                    approveOrganization(docId);
+                  },
+                  child: const Text(
+                    'Approve',
+                    style: TextStyle(color: Colors.white), // Text color
+                  ),
+                ),
+              ),
           ],
         ),
       ),
@@ -153,7 +168,34 @@ class OrganizationTile extends StatelessWidget {
       print('Error approving organization: $e');
     }
   }
+
+  void _showProofDialog(BuildContext context, String? proofUrl) {
+    if (proofUrl != null) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Proof of Legitimacy'),
+            content: Image.network(proofUrl),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Close', style: TextStyle(color: Colors.teal)),
+              ),
+            ],
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20.0),
+            ),
+            backgroundColor: Colors.white,
+          );
+        },
+      );
+    }
+  }
 }
+
 
 class DonorsList extends StatelessWidget {
   @override
@@ -197,13 +239,16 @@ class DonorTile extends StatelessWidget {
       child: Theme(
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent), // Set divider color to transparent
           child: ExpansionTile(
-            title:Text(data['name'], style: TextStyle(color: Colors.teal)),
+            title:Text(data['name'], style: TextStyle(color: Colors.teal, fontWeight: FontWeight.bold)),
           children: [
             ListTile(
               title: Text('Email: ${data['email']}'),
             ),
             ListTile(
               title: Text('Address: ${data['address']}'),
+            ),
+            ListTile(
+              title: Text('Work Address: ${data['workAddress'] ?? ''}'),
             ),
             ListTile(
               title: Text('Contact Number: ${data['contactNo']}'),
@@ -278,7 +323,7 @@ class DonationTile extends StatelessWidget {
       child: Theme(
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent), // Set divider color to transparent
           child: ExpansionTile(
-            title:Text(data['name'], style: TextStyle(color: Colors.teal)),
+            title:Text(data['name'], style: TextStyle(color: Colors.teal, fontWeight: FontWeight.bold)),
             subtitle: Text('Status: ${data['status']}'),
             children: [
             ListTile(

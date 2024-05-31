@@ -19,7 +19,7 @@ class AdminPage extends StatelessWidget {
               fontWeight: FontWeight.bold
             ),
           ),
-          backgroundColor: Colors.teal,
+          backgroundColor: Colors.teal.shade700,
           actions: [
             IconButton(
               icon: Icon(Icons.logout, color: Colors.white),
@@ -36,7 +36,7 @@ class AdminPage extends StatelessWidget {
           bottom: TabBar(
             indicatorColor: Colors.white,
             labelColor: Colors.white,
-            unselectedLabelColor: Colors.teal.shade100,
+            unselectedLabelColor: Colors.teal.shade200,
             tabs: [
               Tab(text: 'Organizations'),
               Tab(text: 'Donors'),
@@ -109,7 +109,7 @@ class OrganizationTile extends StatelessWidget {
       child: Theme(
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent), // Set divider color to transparent
         child: ExpansionTile(
-          title: Text(data['organizationName'], style: TextStyle(color: Colors.teal)),
+          title: Text(data['organizationName'], style: TextStyle(color: Colors.teal, fontWeight: FontWeight.bold)),
           subtitle: Text('Status: ${isApproved ? 'Approved' : 'Pending'}'),
           children: [
             ListTile(
@@ -239,7 +239,7 @@ class DonorTile extends StatelessWidget {
       child: Theme(
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent), // Set divider color to transparent
           child: ExpansionTile(
-            title:Text(data['name'], style: TextStyle(color: Colors.teal)),
+            title:Text(data['name'], style: TextStyle(color: Colors.teal, fontWeight: FontWeight.bold)),
           children: [
             ListTile(
               title: Text('Email: ${data['email']}'),
@@ -323,7 +323,7 @@ class DonationTile extends StatelessWidget {
       child: Theme(
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent), // Set divider color to transparent
           child: ExpansionTile(
-            title:Text(data['name'], style: TextStyle(color: Colors.teal)),
+            title:Text(data['name'], style: TextStyle(color: Colors.teal, fontWeight: FontWeight.bold)),
             subtitle: Text('Status: ${data['status']}'),
             children: [
             ListTile(
